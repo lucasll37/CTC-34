@@ -1,0 +1,1 @@
+gcc ./src/main.cpp ./src/mast.h ./src/mast.cpp -o mast.exe
