@@ -13,8 +13,8 @@
 
 
 struct STATE {
-    std::map<char, std::pair<STATE *, int>> transitions;
-    bool isFinal;
+    std::map<char, STATE *> transitions;
+    bool isMatch;
 };
 
 class LevenshteinAutomaton {
@@ -23,7 +23,8 @@ private:
 
     std::string s;
     int max_edits;
-    std::vector<int> start();
+    std::vector<STATE *> statesAddress;
+    std::vector<int> start(void);
     std::vector<int> step(const std::vector<int>& state, char c);
     bool is_match(const std::vector<int>& state);
     bool can_match(const std::vector<int>& state);
@@ -38,8 +39,9 @@ public:
 
     STATE *DFA;
     LevenshteinAutomaton(const std::string& s, int n);
-    void generate(bool printGraph);
-
+    ~LevenshteinAutomaton(void);
+    void generate(void);
+    
 };
 
 #endif /* LEVENSHTEIN_H */
