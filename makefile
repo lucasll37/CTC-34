@@ -5,7 +5,8 @@ EXECUTABLE = ./build/mast.exe
 SRC_DIR = ./src
 
 # Lista de arquivos de origem
-SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/mast.cpp
+SOURCES = $(SRC_DIR)/main2.cpp $(SRC_DIR)/levenshtein.cpp
+# SOURCES = $(SRC_DIR)/main.cpp $(SRC_DIR)/mast.cpp
 
 # Comando de compilação
 CC = g++
@@ -21,6 +22,9 @@ all:
 
 run:
 	$(EXECUTABLE)
+
+graph:
+	dot -Tpng ./graphs/graph.dot -o ./graphs/graph.png
 
 clean:
 	$(RM) $(EXECUTABLE)

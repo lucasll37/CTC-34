@@ -3,3 +3,4 @@
 make: compila
 make run: executa o programa compilado
 make clean: apaga arquivo executado gerado
+make graph: gera o grafo

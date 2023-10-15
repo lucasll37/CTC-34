@@ -1,48 +1,38 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <unordered_map>
+#include <map>
+#include <tuple>
 #include "levenshtein.h"
 
+
+
 int main() {
-    LevenshteinAutomaton lev("woof", 10);
 
-    std::unordered_map<std::pair<std::vector<int>, std::vector<int>>, int> states;
-    std::vector<std::tuple<int, int, char>> transitions;
-    std::vector<int> matching;
+    LevenshteinAutomaton lev("woof", 1);
+
+    std::map<std::vector<int>, int> states;
     int counter = 0;
+    std::vector<int> matching;
+    std::vector<std::tuple<int, int, char>> transitionsStates;
 
-    auto explore = [&](auto&& self, const std::pair<std::vector<int>, std::vector<int>>& state) -> int {
-        if (states.find(state) != states.end()) {
-            return states[state];
-        }
+    std::vector<int> initialState(lev.start());
 
-        int i = counter++;
-        states[state] = i;
+    lev.explore(initialState, states, counter, matching, transitionsStates);
 
-        if (lev.is_match(state)) {
-            matching.push_back(i);
-        }
 
-        auto trans = lev.transitions(state);
-        trans.insert('*');
+    int start, end;
+    char label;
 
-        for (char c : trans) {
-            auto newstate = lev.step(state, c);
-            int j = self(self, newstate);
-            transitions.emplace_back(i, j, c);
-        }
-
-        return i;
-    };
-
-    explore(explore, lev.start());
-
-    std::ofstream file("graph.dot");
+    std::ofstream file("./graphs/graph.dot");
 
     file << "digraph G {\n";
 
-    for (const auto& [start, end, label] : transitions) {
+    for (const auto& transaction : transitionsStates) {
+        start = std::get<0>(transaction);
+        end = std::get<1>(transaction);
+        label = std::get<2>(transaction);
+
         file << start << " -> " << end << " [label=\" " << label << " \"];\n";
     }
 
@@ -58,4 +48,6 @@ int main() {
 
     return 0;
 }
+
+
 

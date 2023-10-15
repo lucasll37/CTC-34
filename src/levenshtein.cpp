@@ -1,11 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <string>
-#include <unordered_map>
-#include <unordered_set>
-#include <fstream>
 #include "levenshtein.h"
-
 
 
 LevenshteinAutomaton::LevenshteinAutomaton(const std::string& s, int n) : s(s), max_edits(n) {}
@@ -15,16 +8,18 @@ std::vector<int> LevenshteinAutomaton::start() {
     for (size_t i = 0; i <= s.size(); ++i) {
         v[i] = i;
     }
+     
     return v;
 }
 
-std::vector<int> LevenshteinAutomaton::step(const std::vector<int>& state, char c) {
+std::vector<int> LevenshteinAutomaton::step(const std::vector<int> &state, char c) {
     std::vector<int> new_state;
     new_state.push_back(state[0] + 1);
     for (size_t i = 0; i < state.size() - 1; ++i) {
         int cost = (s[i] == c) ? 0 : 1;
         new_state.push_back(std::min({new_state[i] + 1, state[i] + cost, state[i + 1] + 1}));
     }
+    
     for (auto &x : new_state) {
         x = std::min(x, max_edits + 1);
     }
@@ -48,4 +43,32 @@ std::unordered_set<char> LevenshteinAutomaton::transitions(const std::vector<int
         }
     }
     return result;
+}
+
+int LevenshteinAutomaton::explore(std::vector<int> &state,
+                                  std::map<std::vector<int>, int> &states,
+                                  int &counter, std::vector<int> &matching,
+                                  std::vector<std::tuple<int, int, char>> &transitionsStates) {
+
+    if(states.find(state) != states.end()) {
+        return states[state];
+    }
+
+    int i = counter++;
+    states[state] = i;
+
+    if(is_match(state)) {
+        matching.push_back(i);
+    }
+
+    auto trans = transitions(state);
+    trans.insert('*');
+
+    for (const char c : trans) {
+        std::vector<int> nextState(step(state, c));
+        int j = explore(nextState, states, counter, matching, transitionsStates);
+        transitionsStates.push_back(std::make_tuple(i, j, c));
+    }
+
+    return i;
 }
