@@ -18,13 +18,11 @@ struct STATE {
 };
 
 class LevenshteinAutomaton {
+
 private:
+
     std::string s;
     int max_edits;
-
-public:
-    LevenshteinAutomaton(const std::string& s, int n);
-    void generate(std::vector<int> state);
     std::vector<int> start();
     std::vector<int> step(const std::vector<int>& state, char c);
     bool is_match(const std::vector<int>& state);
@@ -36,7 +34,11 @@ public:
                 int &counter, std::vector<int> &matching,
                 std::vector<std::tuple<int, int, char>> &transitionsStates);
 
-    
+public:
+
+    STATE *DFA;
+    LevenshteinAutomaton(const std::string& s, int n);
+    void generate(bool printGraph);
 
 };
 
