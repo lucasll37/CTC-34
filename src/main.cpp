@@ -2,7 +2,9 @@
 
 int main() {
     
-    std::ifstream american_english("../data/american-english");
+    std::ifstream american_english;
+
+    american_english.open("./data/american-english.txt");
 
     MAST mast;
 
