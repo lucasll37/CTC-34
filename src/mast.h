@@ -1,46 +1,119 @@
-#ifndef EXAME_MAST_H
-#define EXAME_MAST_H
-
 #include <iostream>
-#include <map>
-#include <fstream>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include <set>
+#include <fstream>
 
+const int MAX_WORD_SIZE = 100;
 
-struct STATE {
-    std::map<char, std::pair<STATE *, std::string>> transitions;
-    int output;
+class State {
+public:
+    std::unordered_map<char, State*> transitions;
     bool isFinal;
+    std::set<std::string> outputs;
+
+    State() : isFinal(false) {}
+
+    State* getTransition(char c) {
+        if(transitions.find(c) != transitions.end())
+            return transitions[c];
+        return nullptr;
+    }
+
+    void setTransition(char c, State* s) {
+        transitions[c] = s;
+    }
 };
 
-class MAST {
-    
-public:
-
-    MAST();
-    ~MAST();
-    void generate(std::ifstream& arquivoEntrada);
-    STATE *FST;
-    
+class Transducer {
 private:
-    // STATE *currentState;
-    // STATE *newState;
-    // STATE *lastState;
-    
-    // void addTransition(char symbol);
-    // void addFinalState();
-    // void reset();
-    std::map<STATE *, int> MinimalTranducerStatesDictionary;
-    void clearState(STATE *state);
-    void addTransition(STATE *state, char symbol, STATE *newState);
-    void setFinalState(STATE *state, bool isFinal);
-    void setOutput(STATE *state, char c, std::string output);
-    std::string output(STATE *state, char symbol);
-    STATE *findMinimized(STATE *state);
-    bool isFinal(STATE *state);
-    
-}; //class
+    std::unordered_map<std::string, State*> statesDictionary;
+    State* tempStates[MAX_WORD_SIZE];
+    State* initialState;
 
-#endif /* MAST_H */
+    State* findMinimized(State* s) {
+        for(auto& pair : statesDictionary) {
+            if(pair.second->outputs == s->outputs)
+                return pair.second;
+        }
+        State* newState = new State(*s);
+        statesDictionary[s->outputs] = newState;
+        return newState;
+    }
+
+public:
+    Transducer() {
+        for(int i = 0; i < MAX_WORD_SIZE; i++) {
+            tempStates[i] = new State();
+        }
+    }
+
+    void processWords(const std::string& filename) {
+        std::ifstream input(filename);
+        if(!input.is_open()) {
+            std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+            return;
+        }
+
+        std::string previousWord = "";
+        std::string currentWord;
+
+        while(std::getline(input, currentWord)) {
+            // Como exemplo simples, a saída é a própria palavra.
+            std::string currentOutput = currentWord;
+
+            // TODO: Adicionar lógica de transição, saída e manipulação de estados.
+
+            previousWord = currentWord;
+        }
+        input.close();
+    }
+
+    void printTransducer(std::ostream& output) {
+        output << "digraph Transducer {\n";
+        output << "\trankdir=LR;\n";
+        output << "\tnode [shape=circle];\n";
+
+        for (auto& pair : statesDictionary) {
+            State* s = pair.second;
+
+            if (s->isFinal) {
+                output << "\t\"" << pair.first << "\" [shape=doublecircle];\n";
+            }
+
+            for (auto& trans : s->transitions) {
+                output << "\t\"" << pair.first << "\" -> \"" << trans.second->outputs << "\" "
+                       << "[label=\"" << trans.first << "/" << trans.second->outputs << "\"];\n";
+            }
+        }
+
+        output << "}\n";
+    }
+};
+
+int main(int argc, char *argv[]) {
+    if(argc < 3) {
+        std::cerr << "Uso: " << argv[0] << " <arquivo_de_entrada> <arquivo_de_saida>" << std::endl;
+        return 1;
+    }
+
+    Transducer t;
+
+    std::string inputFilename = ""; // argv[1];
+    std::string outputFilename = ""; // argv[2];
+
+    std::ofstream outputFile(outputFilename);
+
+    if(!outputFile.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de saída!" << std::endl;
+        return 1;
+    }
+
+    t.processWords(inputFilename);
+    t.printTransducer(outputFile);
+    
+    outputFile.close();
+
+    return 0;
+}

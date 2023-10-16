@@ -9,7 +9,7 @@
 
 int main() {
 
-    LevenshteinAutomaton lev("pentagon", 1);
+    LevenshteinAutomaton lev("deodado", 2);
     lev.generate();
     
     std::string candidate = "waofa";

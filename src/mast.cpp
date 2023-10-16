@@ -1,133 +1,100 @@
-#include "mast.h"
-#include <utility>
+#include <iostream>
+#include <unordered_map>
+#include <string>
+#include <vector>
+#include <set>
+#include <fstream>
 
-#define MAX_WORD_SIZE 100
+const int MAX_WORD_SIZE = 100;
 
-MAST::MAST(void) {
-    FST = new STATE();
-    FST->isFinal = false;
-}
+class State {
+public:
+    std::unordered_map<char, State*> transitions;
+    bool isFinal;
+    std::set<std::string> outputs;
 
-MAST::~MAST(void) {
-    delete FST;
-}
+    State() : isFinal(false) {}
 
-void MAST::clearState(STATE *state) {
-    state->transitions.clear();
-    state->output = 0;
-    state->isFinal = false;
-}
-
-void MAST::addTransition(STATE *state, char symbol, STATE *newState) {
-    state->transitions[symbol].first = newState;
-    state->transitions[symbol].second = "";
-}
-
-void MAST::setFinalState(STATE *state, bool isFinal) {
-    state->isFinal = isFinal;
-}
-
-void MAST::setOutput(STATE *state, char symbol, std::string output) {
-    state->transitions[symbol].second = output;
-}
-
-std::string MAST::output(STATE *state, char symbol) {
-    return state->transitions[symbol].second;
-}
-
-bool isFinal(STATE *state) {
-    return state->isFinal;
-}
-
-
-STATE * MAST::findMinimized(STATE *state) {
-    if(MinimalTranducerStatesDictionary.find(state) == MinimalTranducerStatesDictionary.end()) {
-        MinimalTranducerStatesDictionary[state] = 0;
+    State* getTransition(char c) {
+        if(transitions.find(c) != transitions.end())
+            return transitions[c];
+        return nullptr;
     }
 
-    else {
-        return state;
+    void setTransition(char c, State* s) {
+        transitions[c] = s;
     }
-}
+};
 
+class Transducer {
+private:
+    std::unordered_map<std::string, State*> statesDictionary;
+    State* tempStates[MAX_WORD_SIZE];
+    State* initialState;
 
-void MAST::generate(std::ifstream &inputFile) {
-
-    std::string line;
-
-    std::map<STATE *, int> MinimalTranducerStatesDictionary;
-    std::vector<STATE *> tempStates(MAX_WORD_SIZE);
-    std::string previousWord, currentWord, currentOutput, wordSuffix, commonPrefix;
-    std::string tempString;
-    std::set<std::string> tempSet;
-    int count, i, j, prefixLenght;
-    char c;
-
-    for(auto &tempState: tempStates) {
-        tempState = new STATE();
-        clearState(tempState);
+    State* findMinimized(State* s) {
+        for(auto& pair : statesDictionary) {
+            if(pair.second->outputs == s->outputs)
+                return pair.second;
+        }
+        State* newState = new State(*s);
+        statesDictionary[s->outputs] = newState;
+        return newState;
     }
 
-    // for(auto &tempState: tempStates) {
-    //     delete tempState;
-    // }
+public:
+    Transducer() {
+        for(int i = 0; i < MAX_WORD_SIZE; i++) {
+            tempStates[i] = new State();
+        }
+    }
 
-    previousWord = "";
-
-    int charIndex;
-
-    int count = 0;
-
-    while (std::getline(inputFile, line)) {
-        
-        if(count == 0) {
-            currentWord = line;
-            count++;
-            continue;
+    void processWords(const std::string& filename) {
+        std::ifstream input(filename);
+        if(!input.is_open()) {
+            std::cerr << "Erro ao abrir o arquivo!" << std::endl;
+            return;
         }
 
-        previousWord = currentWord;
-        currentWord = line;
-        charIndex = 0;
+        std::string previousWord = "";
+        std::string currentWord;
 
-        while(charIndex < currentWord.length() && charIndex < previousWord.length() && currentWord[charIndex] == previousWord[charIndex]) {
-            charIndex++;
+        while(std::getline(input, currentWord)) {
+            // Como exemplo simples, a saída é a própria palavra.
+            std::string currentOutput = currentWord;
+
+            // TODO: Adicionar lógica de transição, saída e manipulação de estados.
+
+            previousWord = currentWord;
         }
+        input.close();
+    }
 
-        for(int i = previousWord.length(); i > charIndex; i--) {
-            addTransition(tempStates[i-1], previousWord[i-1], findMinimized(tempStates[i]));
-        }
+    void printTransducer(std::ostream& output) {
+        output << "digraph Transducer {\n";
+        output << "\trankdir=LR;\n";
+        output << "\tnode [shape=circle];\n";
 
-        for(int i = charIndex+1; i <= currentWord.length(); i++) {
-            clearState(tempStates[i]);
-            addTransition(tempStates[i-1], currentWord[i], tempStates[i]);
-        }
+        for (auto& pair : statesDictionary) {
+            State* s = pair.second;
 
-        if(currentOutput == previousWord) {
-            setFinalState(tempStates[currentWord.length()], true);
-            setOutput(tempStates[currentWord.length()], 0);
-        }
-
-        for(int i = 0; i <= charIndex; i++) {
-            commonPrefix = output(tempStates[i], previousWord[i]);
-            wordSuffix = 'perdido!';
-
-
-            for (char c = 'a'; c <= 'z'; ++c) {
-                if(tempStates[i]->transitions.find(c) != tempStates[i]->transitions.end()) {
-                    setOutput(tempStates[i], c, wordSuffix + output(tempStates[i], c));
-                }
+            if (s->isFinal) {
+                output << "\t\"" << pair.first << "\" [shape=doublecircle];\n";
             }
 
-            if(isFinal(tempStates[i])) {
-                tempSet.clear();
+            for (auto& trans : s->transitions) {
+                output << "\t\"" << pair.first << "\" -> \"" << trans.second->outputs << "\" "
+                       << "[label=\"" << trans.first << "/" << trans.second->outputs << "\"];\n";
             }
-
         }
-        count++;
 
-        if(count == 10) {
-            break;
-        }
+        output << "}\n";
     }
+};
+
+int main() {
+    Transducer t;
+    t.processWords("input.txt");  // Supondo que o arquivo se chame input.txt
+    t.printTransducer(std::cout);  // Imprime o transdutor no formato DOT na saída padrão.
+    return 0;
 }
