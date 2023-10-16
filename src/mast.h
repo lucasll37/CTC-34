@@ -9,25 +9,19 @@
 #include <set>
 
 
-struct TRANSICTION {
-    char symbol;
-    STATE *nextState;
-    int output;
-};
-
 struct STATE {
-    std::map<char, TRANSICTION *> transitions;
+    std::map<char, std::pair<STATE *, std::string>> transitions;
+    int output;
     bool isFinal;
 };
 
 class MAST {
     
 public:
+
     MAST();
     ~MAST();
-
     void generate(std::ifstream& arquivoEntrada);
-    
     STATE *FST;
     
 private:
@@ -38,14 +32,15 @@ private:
     // void addTransition(char symbol);
     // void addFinalState();
     // void reset();
-    void _clearState(STATE *state);
-    void _addTransition(STATE *state, char symbol, STATE *newState);
-    void _setFinalState(STATE *state, bool isFinal);
-    void _setOutput(STATE *state, int output);
-    int _output(STATE *state, char symbol);
+    std::map<STATE *, int> MinimalTranducerStatesDictionary;
+    void clearState(STATE *state);
+    void addTransition(STATE *state, char symbol, STATE *newState);
+    void setFinalState(STATE *state, bool isFinal);
+    void setOutput(STATE *state, char c, std::string output);
+    std::string output(STATE *state, char symbol);
+    STATE *findMinimized(STATE *state);
+    bool isFinal(STATE *state);
     
-    
-
 }; //class
 
 #endif /* MAST_H */

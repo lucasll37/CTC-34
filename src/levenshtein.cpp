@@ -7,8 +7,6 @@ LevenshteinAutomaton::~LevenshteinAutomaton(void) {
     for (auto &x : statesAddress) {
         delete x;
     }
-
-
 }
 
 std::vector<int> LevenshteinAutomaton::start(void) {
