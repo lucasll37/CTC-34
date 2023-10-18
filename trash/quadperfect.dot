@@ -1,0 +1,49 @@
+digraph quadperfect {
+    rankdir=LR;
+    size="10,10";
+    node [shape = circle];
+    ini [shape=point];
+    q3 [shape=doublecircle];
+
+    // Initial transition
+    ini -> q0;
+
+    // Transitions
+    q0 -> q0 [label="a/a,R"];
+    q0 -> q1 [label="∪/#,R"];
+
+    q1 -> q1 [label="∪/X,L"];
+    q1 -> q2 [label="#/#,L"];
+
+    q2 -> q3 [label="∪/∪,-"];
+    q2 -> q4 [label="a/a,R"];
+
+    q4 -> q4 [label="#/#,R"];
+    q4 -> q8 [label="∪/∪,L"];
+    q4 -> q4 [label="Y/Y,R"];
+    q4 -> q5 [label="X/Y,L"];
+
+    q5 -> q5 [label="Y/Y,L"];
+    q5 -> q5 [label="b/b,L"];
+    q5 -> q5 [label="#/#,L"];
+    q5 -> q7 [label="a/b,R"];
+
+    q7 -> q7 [label="b/b,R"];
+    q7 -> q4 [label="#/#,R"];
+
+    q8 -> q3 [label="∪/∪,-"];
+    q8 -> q8 [label="b/b,L"];
+    q8 -> q8 [label="#/#,L"];
+    q8 -> q8 [label="Y/Y,L"];
+    q8 -> q9 [label="a/a,R"];
+
+    q9 -> q9 [label="b/b,R"];
+    q9 -> q9 [label="#/#,R"];
+    q9 -> q9 [label="Y/X,R"];
+    q9 -> q10 [label="∪/X,R"];
+
+    q10 -> q11 [label="∪/X,L"];
+
+    q11 -> q11 [label="X/X,L"];
+    q11 -> q4 [label="#/#,R"];
+}

@@ -33,17 +33,18 @@ private:
     State* initialState;
 
     State* findMinimized(State* s) {
-        for(auto& pair : statesDictionary) {
-            if(pair.second->outputs == s->outputs)
-                return pair.second;
+        // Aqui, estamos usando uma string de exemplo para a chave. Isso precisa ser ajustado para um critério real de minimização.
+        std::string key = *s->outputs.begin();  
+        if (statesDictionary.find(key) != statesDictionary.end()) {
+            return statesDictionary[key];
         }
         State* newState = new State(*s);
-        statesDictionary[s->outputs] = newState;
+        statesDictionary[key] = newState;
         return newState;
     }
 
 public:
-    Transducer() {
+    Transducer() : initialState(new State()) {
         for(int i = 0; i < MAX_WORD_SIZE; i++) {
             tempStates[i] = new State();
         }
