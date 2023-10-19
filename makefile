@@ -30,8 +30,11 @@ run-mast:
 run-lev:
 	$(EXECUTABLE_LEV)
 
-graph:
-	dot -Tpng ./graphs/graph.dot -o ./graphs/graph.png
+graph-lev:
+	dot -Tpng ./graphs/lev.dot -o ./graphs/lev.png
+
+graph-mast:
+	dot -Tpng ./graphs/mast.dot -o ./graphs/mast.png
 
 clean:
 	$(RM) $(EXECUTABLE_MAST) $(EXECUTABLE_LEV)

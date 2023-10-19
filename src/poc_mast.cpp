@@ -1,4 +1,4 @@
-#include "mast.cpp"
+#include "mast.h"
 
 int main() {
 

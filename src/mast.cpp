@@ -1,148 +1,141 @@
-#include <map>
-#include <utility>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <fstream>
+#include "mast.h"
 
-#define MAX_WORD_SIZE 100
 
-struct STATE {
+MAST::MAST() {
+    initialState = new STATE();
+    states[initialState] = 0;
+}
 
-    STATE() {
-        isFinal = false;
-        transactions.clear();
+void MAST::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
+    state->transactions[c] = std::make_pair(value, nextState);
+}
+
+STATE * MAST::getNextStateTransition(STATE *state, char c) {
+    if(state->transactions.find(c) == state->transactions.end()) {
+        return nullptr;
     }
 
-    std::map<char, std::pair<unsigned int, STATE *>> transactions;
-    bool isFinal;
-};
+    return state->transactions[c].second;
+}
 
-class MAST {
-    std::map<STATE *, unsigned int> states;
-    STATE *tempStates[MAX_WORD_SIZE];
-    STATE *fisrtState;
-    // unsigned int nStates = 0;
+unsigned int MAST::getValueTransition(STATE *state, char c) {
+    if(state->transactions.find(c) == state->transactions.end()) {
+        return 0;
+    }
 
-    public:
+    return state->transactions[c].first;
+}
 
-        void setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
-            state->transactions[c] = std::make_pair(value, nextState);
+void MAST::setFinal(STATE *state, bool isFinal) {
+    state->isFinal = isFinal;
+}
+
+STATE * MAST::findMinimized(STATE *s) {
+    STATE *r = nullptr;
+    bool isEqual;
+
+    for(auto &state: states) {
+
+        if(s->isFinal != state.first->isFinal) {
+            continue;
         }
 
-        STATE *getNextStateTransition(STATE *state, char c) {
-            if(state->transactions.find(c) == state->transactions.end()) {
-                return nullptr;
-            }
+        isEqual = true;
 
-            return state->transactions[c].second;
+        for(auto &transictionPair: s->transactions) {
+            if(state.first->transactions.find(transictionPair.first) == state.first->transactions.end()) {
+                isEqual = false;
+                break;
+            }
         }
 
-        unsigned int getValueTransition(STATE *state, char c) {
-            if(state->transactions.find(c) == state->transactions.end()) {
-                return 0;
-            }
+        if(isEqual) {
+            r = state.first;
+            break;
+        }
+    }
 
-            return state->transactions[c].first;
+    if(r == nullptr) {
+        r = new STATE();
+        r->isFinal = s->isFinal;
+        
+        for(auto &transictionPair: s->transactions) {
+            r->transactions[transictionPair.first] = transictionPair.second;
         }
 
-        void setFinal(STATE *state, bool isFinal) {
-            state->isFinal = isFinal;
+        states[r] = nStates++;
+    }
+
+    return r;
+}
+
+void MAST::cleanState(STATE *state) {
+    state->isFinal = false;
+    state->transactions.clear();
+}
+
+void MAST::printDigraph() {
+
+    std::ofstream digraph("./graphs/mast.dot");
+
+    digraph << "digraph G {\n";
+    digraph << "rankdir=LR;\n";
+    digraph << "node [shape=circle];\n";
+    digraph <<  "ini [shape=point];\n";
+    digraph << "ini -> q" << states[initialState] << ";\n";
+
+    for(auto &state : states) {
+        digraph << "\tq" << state.second << " [label=\"q" << state.second << "\"];\n";
+        if(state.first->isFinal) {
+            digraph << "\tq" << state.second << " [shape=doublecircle];\n";
+            digraph << "\tq" << state.second << " [style=filled fillcolor=gray];\n";
+        }
+    }
+
+    for(auto &state : states) {
+        for(auto &transition : state.first->transactions) {
+            digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
+        }
+    }
+
+    digraph << "}\n";
+}
+
+void MAST::generate(std::ifstream ordenatedWords) {
+    std::string previousWord = "";
+    std::string currentWord;
+    std::size_t prefixLengthPlus1;
+
+    for(auto &tempState : tempStates) {
+        tempState = new STATE();
+    }
+
+    while(std::getline(ordenatedWords, currentWord)) {
+
+        prefixLengthPlus1 = 0;
+
+        while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
+                prefixLengthPlus1 += 1;
         }
 
-        STATE *findMinimized(STATE *s) {
-            STATE *r = nullptr;
-            bool isEqual;
-
-            for(auto &state: states) {
-
-                if(s->isFinal != state.first->isFinal) {
-                    continue;
-                }
-
-                isEqual = true;
-
-                for(auto &transictionPair: s->transactions) {
-                    if(state.first->transactions.find(transictionPair.first) == state.first->transactions.end()) {
-                        isEqual = false;
-                        break;
-                    }
-                }
-
-                if(isEqual) {
-                    r = state.first;
-                    break;
-                }
-            }
-
-            if(r == nullptr) {
-                r = new STATE();
-                r->isFinal = s->isFinal;
-                
-                for(auto &transictionPair: s->transactions) {
-                    r->transactions[transictionPair.first] = transictionPair.second;
-                }
-
-                states[r] = states.size();
-            }
-
-            return r;
+        for(std::size_t i = previousWord.size(); i > prefixLengthPlus1; i--) {
+            setTransition(tempStates[i-1], previousWord[i-1], 0, findMinimized(tempStates[i]));
         }
 
-        void printDigraph() {
-
-            std::ofstream digraph("test.dot");
-
-            digraph << "digraph G {\n";
-            digraph << "rankdir=LR;\n";
-            digraph << "node [shape=circle];\n";
-
-            for(auto &state : states) {
-                digraph << "\tq" << state.second << " [label=\"q" << state.second << "\"];\n";
-            }
-
-            for(auto &state : states) {
-                for(auto &transition : state.first->transactions) {
-                    digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
-                }
-            }
-
-            digraph << "}\n";
+        for(std::size_t i = prefixLengthPlus1; i < currentWord.size(); i++) {
+            cleanState(tempStates[i+1]);
+            setTransition(tempStates[i], currentWord[i], 0, tempStates[i+1]);
         }
 
-        void generate(std::ifstream ordenatedWords) {
-            std::string previousWord = "";
-            std::string currentWord;
-            bool fistLine = true;
-
-            for(auto &tempState : tempStates) {
-                tempState = new STATE();
-            }
-
-            while(std::getline(ordenatedWords, currentWord)) {
-                if(fistLine) {
-                    previousWord = currentWord;
-                    fistLine = false;
-                    continue;
-                }
-
-                unsigned int prefixLengthPlus1 = 0;
-
-                for(unsigned int i = 0; i < currentWord.length(); i++) {
-                    if(currentWord[i] != previousWord[i]) {
-                        prefixLengthPlus1 = i + 1;
-                        break;
-                    }
-                }
-
-                for(int i = currentWord.size(); i > prefixLengthPlus1; i--) {
-                    setTransition(tempStates[i-1], currentWord[i-1], 0, findMinimized(tempStates[i]));
-                }
-
-                previousWord = currentWord;
-            }
+        setFinal(tempStates[currentWord.size()], true);
 
 
-        }
+        previousWord = currentWord;
+    }
 
-};
+    for(std::size_t i = currentWord.size(); i > 0; i--) {
+        setTransition(tempStates[i-1], currentWord[i-1], 0, findMinimized(tempStates[i]));
+    }
+
+    initialState = findMinimized(tempStates[0]);
+}
