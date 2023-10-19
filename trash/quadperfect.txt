@@ -3,11 +3,18 @@ name: quadperfect
 init: q0
 accept: q3
 
+// STATE q0: leva a cabeça de leitura para o termino da sequência e
+// ao atingi-lo, insere um '#' para separar a sequência analisada da
+// estrutura de contagem, o que tornar a vizualização mais clara.
+
 q0,a
 q0,a,>
 
 q0,_
 q1,#,>
+
+// STATE q1: insere o primeiro 'X', que representa 1 (um) e retorna a
+// cabeça de leitura para a sequência em análise.
 
 q1,_
 q1,X,<
@@ -15,23 +22,36 @@ q1,X,<
 q1,#
 q2,#,<
 
+// STATE q2: verifica se a sequência é nula (o que é uma resposta válida) ou
+// inicia um processo cíclico de verificação, explorando a propriedade de 
+// que todo número quadrado perfeito é a soma sequência de números impares
+// consecutivos a partir do 1 (um).
+
 q2,_
 q3,_,-
 
 q2,a
 q4,a,>
 
+// STATE q4: Desloca para direita até encontrar um 'X' (interprete: devo encontrar
+// um 'a' ainda não descoberto e torná-lo descoberto ('a' -> 'b')) ou até
+// encontrar um espaço vazio '_' (interprete: já removi toda a quantidade impar
+// proposta de 'a's da sequência).
+
 q4,#
 q4,#,>
 
 q4,_
-q8,_,<
+q7,_,<
 
 q4,Y
 q4,Y,>
 
 q4,X
 q5,Y,<
+
+// STATE q5: Desloco para esquerda até encontrar um 'a' e convertê-lo em
+// 'b'.
 
 q5,Y
 q5,Y,<
@@ -46,46 +66,63 @@ q5,#,<
 // q6,_,<
 
 q5,a
-q7,b,>
+q6,b,>
 
-q7,b
-q7,b,>
+// STATE q6: Retorno a cabeça de leitura para o trecho da fita destinado
+// ao registra da contagem (simbolo '#').
 
-q7,#
+q6,b
+q6,b,>
+
+q6,#
 q4,#,>
 
-q8,_
+// STATE q7: Desloca para a esquerda até encontrar um espaço vazio ('_')
+// (interprete: não resta mais 'a' não descobertos e a sequência deve ser
+// aceita) ou até encontrar um 'a' (interprete: ainda resta(am) 'a' a 
+// ser(em) removidos).
+
+q7,_
 q3,_,-
 
+q7,b
+q7,b,<
+
+q7,#
+q7,#,<
+
+q7,Y
+q7,Y,<
+
+q7,a
+q8,a,>
+
+// STATE q8: Desloca a cabeça de leitura para direita até encontrar
+// a região da fita destinada a contagem e acrescenta um 'X'.
+
 q8,b
-q8,b,<
+q8,b,>
 
 q8,#
-q8,#,<
+q8,#,>
 
 q8,Y
-q8,Y,<
+q8,X,>
 
-q8,a
-q9,a,>
-
-q9,b
-q9,b,>
-
-q9,#
-q9,#,>
-
-q9,Y
+q8,_
 q9,X,>
 
+// STATE q9: Novamente, adiciona um novo 'X' a região da fita destinado
+// a contagem.
+
 q9,_
-q10,X,>
+q10,X,<
 
-q10,_
-q11,X,<
+// STATE q10: Retorna a cabeça de leitura da fita ao simbolo "#" da fita
+// e retoma o processo cíclico de conversão de 'a's em 'b's 
 
-q11,X
-q11,X,<
+q10,X
+q10,X,<
 
-q11,#
+q10,#
 q4,#,>

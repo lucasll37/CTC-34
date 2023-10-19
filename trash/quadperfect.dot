@@ -19,31 +19,31 @@ digraph quadperfect {
     q2 -> q4 [label="a/a,R"];
 
     q4 -> q4 [label="#/#,R"];
-    q4 -> q8 [label="∪/∪,L"];
+    q4 -> q7 [label="∪/∪,L"];
     q4 -> q4 [label="Y/Y,R"];
     q4 -> q5 [label="X/Y,L"];
 
     q5 -> q5 [label="Y/Y,L"];
     q5 -> q5 [label="b/b,L"];
     q5 -> q5 [label="#/#,L"];
-    q5 -> q7 [label="a/b,R"];
+    q5 -> q6 [label="a/b,R"];
 
-    q7 -> q7 [label="b/b,R"];
-    q7 -> q4 [label="#/#,R"];
+    q6 -> q6 [label="b/b,R"];
+    q6 -> q4 [label="#/#,R"];
 
-    q8 -> q3 [label="∪/∪,-"];
-    q8 -> q8 [label="b/b,L"];
-    q8 -> q8 [label="#/#,L"];
-    q8 -> q8 [label="Y/Y,L"];
-    q8 -> q9 [label="a/a,R"];
+    q7 -> q3 [label="∪/∪,-"];
+    q7 -> q7 [label="b/b,L"];
+    q7 -> q7 [label="#/#,L"];
+    q7 -> q7 [label="Y/Y,L"];
+    q7 -> q8 [label="a/a,R"];
 
-    q9 -> q9 [label="b/b,R"];
-    q9 -> q9 [label="#/#,R"];
-    q9 -> q9 [label="Y/X,R"];
-    q9 -> q10 [label="∪/X,R"];
+    q8 -> q8 [label="b/b,R"];
+    q8 -> q8 [label="#/#,R"];
+    q8 -> q8 [label="Y/X,R"];
+    q8 -> q9 [label="∪/X,R"];
 
-    q10 -> q11 [label="∪/X,L"];
+    q9 -> q10 [label="∪/X,L"];
 
-    q11 -> q11 [label="X/X,L"];
-    q11 -> q4 [label="#/#,R"];
+    q10 -> q10 [label="X/X,L"];
+    q10 -> q4 [label="#/#,R"];
 }
