@@ -36,7 +36,7 @@ STATE * MAST::findMinimized(STATE *s) {
 
     for(auto &state: states) {
 
-        if(s->isFinal != state.first->isFinal) {
+        if(state.first->isFinal != s->isFinal) {
             continue;
         }
 
@@ -44,6 +44,11 @@ STATE * MAST::findMinimized(STATE *s) {
 
         for(auto &transictionPair: s->transactions) {
             if(state.first->transactions.find(transictionPair.first) == state.first->transactions.end()) {
+                isEqual = false;
+                break;
+            }
+
+            else if(state.first->transactions[transictionPair.first] != transictionPair.second) {
                 isEqual = false;
                 break;
             }
@@ -133,8 +138,8 @@ void MAST::generate(std::ifstream ordenatedWords) {
         previousWord = currentWord;
     }
 
-    for(std::size_t i = currentWord.size(); i > 0; i--) {
-        setTransition(tempStates[i-1], currentWord[i-1], 0, findMinimized(tempStates[i]));
+    for(std::size_t i = previousWord.size(); i > 0; i--) {
+        setTransition(tempStates[i-1], previousWord[i-1], 0, findMinimized(tempStates[i]));
     }
 
     initialState = findMinimized(tempStates[0]);

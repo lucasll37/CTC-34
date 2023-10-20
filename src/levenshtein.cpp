@@ -99,7 +99,7 @@ void LevenshteinAutomaton::generate(void) {
     int start, end;
     char label;
 
-    std::ofstream file("./graphs/graph.dot");
+    std::ofstream file("./graphs/lev.dot");
     file << "digraph G {\n";
     
 

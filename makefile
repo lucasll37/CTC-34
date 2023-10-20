@@ -38,3 +38,8 @@ graph-mast:
 
 clean:
 	$(RM) $(EXECUTABLE_MAST) $(EXECUTABLE_LEV)
+
+all:
+	$(CC) $(CFLAGS) $(SOURCES_MAST) -o $(EXECUTABLE_MAST)
+	$(EXECUTABLE_MAST)
+	dot -Tpng ./graphs/mast.dot -o ./graphs/mast.png

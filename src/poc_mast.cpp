@@ -1,7 +1,6 @@
 #include "mast.h"
 
 int main() {
-
     std::ifstream american_english("./data/dummy.txt");
     MAST mast;
 
