@@ -1,36 +1,21 @@
-#include "mast.h"
+#include "minAcyclicSubseqTransducers.h"
 
 
-MAST::MAST() {
+MinAcyclicSubseqTransducers::MinAcyclicSubseqTransducers() {
     initialState = new STATE();
     states[initialState] = 0;
 }
 
-void MAST::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
+void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
     state->transactions[c] = std::make_pair(value, nextState);
 }
 
-STATE * MAST::getNextStateTransition(STATE *state, char c) {
-    if(state->transactions.find(c) == state->transactions.end()) {
-        return nullptr;
-    }
-
-    return state->transactions[c].second;
-}
-
-unsigned int MAST::getValueTransition(STATE *state, char c) {
-    if(state->transactions.find(c) == state->transactions.end()) {
-        return 0;
-    }
-
-    return state->transactions[c].first;
-}
-
-void MAST::setFinal(STATE *state, bool isFinal) {
+void MinAcyclicSubseqTransducers::setFinal(STATE *state, bool isFinal) {
     state->isFinal = isFinal;
 }
 
-STATE * MAST::findMinimized(STATE *s) {
+STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
+    
     STATE *r = nullptr;
     bool isEqual;
 
@@ -74,15 +59,14 @@ STATE * MAST::findMinimized(STATE *s) {
     return r;
 }
 
-void MAST::cleanState(STATE *state) {
+void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
     state->isFinal = false;
     state->transactions.clear();
 }
 
-void MAST::printDigraph() {
+void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
 
-    std::ofstream digraph("./graphs/mast.dot");
-
+    std::ofstream digraph(graphVizFolder + "/mast.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
     digraph << "node [shape=circle];\n";
@@ -106,7 +90,15 @@ void MAST::printDigraph() {
     digraph << "}\n";
 }
 
-void MAST::generate(std::ifstream ordenatedWords) {
+void MinAcyclicSubseqTransducers::generate(const std::string& filePath) {
+    
+    std::ifstream ordenatedWords(filePath);
+
+    if (!ordenatedWords.is_open()) {
+        std::cout << "Erro ao abrir o arquivo para leitura." << std::endl;
+        return;
+    }
+
     std::string previousWord = "";
     std::string currentWord;
     std::size_t prefixLengthPlus1;
@@ -116,7 +108,7 @@ void MAST::generate(std::ifstream ordenatedWords) {
     }
 
     while(std::getline(ordenatedWords, currentWord)) {
-
+        
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
@@ -133,10 +125,11 @@ void MAST::generate(std::ifstream ordenatedWords) {
         }
 
         setFinal(tempStates[currentWord.size()], true);
-
-
         previousWord = currentWord;
     }
+
+    ordenatedWords.close();
+
 
     for(std::size_t i = previousWord.size(); i > 0; i--) {
         setTransition(tempStates[i-1], previousWord[i-1], 0, findMinimized(tempStates[i]));

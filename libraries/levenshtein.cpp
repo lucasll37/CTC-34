@@ -1,7 +1,10 @@
 #include "levenshtein.h"
 
 
-LevenshteinAutomaton::LevenshteinAutomaton(const std::string& s, int n) : s(s), max_edits(n) {}
+LevenshteinAutomaton::LevenshteinAutomaton(const std::string& s, int n){
+    this->s = s;
+    this->max_edits = n;
+}
 
 LevenshteinAutomaton::~LevenshteinAutomaton(void) {
     for (auto &x : statesAddress) {
@@ -11,6 +14,7 @@ LevenshteinAutomaton::~LevenshteinAutomaton(void) {
 
 std::vector<int> LevenshteinAutomaton::start(void) {
     std::vector<int> v(s.size() + 1);
+
     for (size_t i = 0; i <= s.size(); ++i) {
         v[i] = i;
     }
@@ -21,6 +25,7 @@ std::vector<int> LevenshteinAutomaton::start(void) {
 std::vector<int> LevenshteinAutomaton::step(const std::vector<int> &state, char c) {
     std::vector<int> new_state;
     new_state.push_back(state[0] + 1);
+
     for (size_t i = 0; i < state.size() - 1; ++i) {
         int cost = (s[i] == c) ? 0 : 1;
         new_state.push_back(std::min({new_state[i] + 1, state[i] + cost, state[i + 1] + 1}));
@@ -43,6 +48,7 @@ bool LevenshteinAutomaton::can_match(const std::vector<int>& state) {
 
 std::unordered_set<char> LevenshteinAutomaton::transitions(const std::vector<int>& state) {
     std::unordered_set<char> result;
+    
     for (size_t i = 0; i < s.size(); ++i) {
         if (state[i] <= max_edits) {
             result.insert(s[i]);
@@ -84,7 +90,6 @@ void LevenshteinAutomaton::generate(void) {
     std::map<std::vector<int>, int> states;
     int counter = 0;
     std::vector<int> matching;
-    std::vector<std::tuple<int, int, char>> transitionsStates;
     std::vector<int> initialState(start());
     explore(initialState, states, counter, matching, transitionsStates);
 
@@ -97,30 +102,50 @@ void LevenshteinAutomaton::generate(void) {
     }
 
     int start, end;
-    char label;
-
-    std::ofstream file("./graphs/lev.dot");
-    file << "digraph G {\n";
-    
+    char label;   
 
     for (const auto& transaction : transitionsStates) {
         start = std::get<0>(transaction);
         end = std::get<1>(transaction);
         label = std::get<2>(transaction);
-        file << start << " -> " << end << " [label=\" " << label << " \"];\n";
-
         statesAddress[start]->transitions[label] = statesAddress[end];
     }
 
     for (int i : matching) {
-        file << i << " [style=filled];\n";
-
         statesAddress[i]->isMatch = true;
     }
 
     DFA = statesAddress[0];
+}
+
+void LevenshteinAutomaton::printDigraph(const std::string& graphVizFolder) {
+    std::ofstream file(graphVizFolder + "/lev.dot");
+    file << "digraph G {\n";
+    file << "\trankdir=TB;\n";
+    file << "\tsize=\"8,5\"\n";
+    file << "\tnode [shape = doublecircle];\n";
+
+
+    for (std::size_t i = 0; i < statesAddress.size(); i++) {
+        if (statesAddress[i]->isMatch) {
+            file << "\t" << i << " [style=filled fillcolor=gray];\n";
+        }
+    }
+
+    file << "\tnode [shape = circle];\n";
+
+    file <<  "ini [shape=point];\n";
+    file << "ini -> 0;\n";
+
+    int start, end;
+    char label;  
+
+    for (const auto& transaction : transitionsStates) {
+        start = std::get<0>(transaction);
+        end = std::get<1>(transaction);
+        label = std::get<2>(transaction);
+        file << "\t" << start << " -> " << end << " [label=\" " << label << " \"];\n";
+    }
 
     file << "}\n";
-    file.close();
-    std::cout << "Graph saved to 'graph.dot'. Submit this to Graphviz for visualization." << std::endl;
 }

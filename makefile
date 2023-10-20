@@ -5,9 +5,12 @@ EXECUTABLE_LEV = ./build/lev.exe
 # Diretório dos arquivos de origem
 SRC_DIR = ./src
 
+# Diretório de bibiotecas
+SRC_LIB = ./libraries
+
 # Lista de arquivos de origem
-SOURCES_MAST = $(SRC_DIR)/poc_mast.cpp $(SRC_DIR)/mast.cpp
-SOURCES_LEV = $(SRC_DIR)/poc_levenshtein.cpp $(SRC_DIR)/levenshtein.cpp
+SOURCES_MAST = $(SRC_DIR)/poc_mast.cpp $(SRC_LIB)/minAcyclicSubseqTransducers.cpp
+SOURCES_LEV = $(SRC_DIR)/poc_levenshtein.cpp $(SRC_LIB)/levenshtein.cpp
 
 # Comando de compilação
 CC = g++
@@ -39,7 +42,12 @@ graph-mast:
 clean:
 	$(RM) $(EXECUTABLE_MAST) $(EXECUTABLE_LEV)
 
-all:
+all-lev:
+	$(CC) $(CFLAGS) $(SOURCES_LEV) -o $(EXECUTABLE_LEV)
+	$(EXECUTABLE_LEV)
+	dot -Tpng ./graphs/graphViz/lev.dot -o ./graphs/lev.png
+
+all-mast:
 	$(CC) $(CFLAGS) $(SOURCES_MAST) -o $(EXECUTABLE_MAST)
 	$(EXECUTABLE_MAST)
-	dot -Tpng ./graphs/mast.dot -o ./graphs/mast.png
+	dot -Tpng ./graphs/graphViz/mast.dot -o ./graphs/mast.png

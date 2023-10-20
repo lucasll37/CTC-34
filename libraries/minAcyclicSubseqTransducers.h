@@ -1,5 +1,5 @@
-#ifndef EXAME_MAST_H
-#define EXAME_MAST_H
+#ifndef MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
+#define MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
 
 #include <map>
 #include <utility>
@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <string>
 
 #define MAX_WORD_SIZE 100
 
@@ -21,16 +22,15 @@ struct STATE {
     bool isFinal;
 };
 
-class MAST {
+class MinAcyclicSubseqTransducers {
 
     public:
         
         std::size_t nStates = 0;
 
-        MAST();
-        void printDigraph();
-        void generate(std::ifstream ordenatedWords);
-
+        MinAcyclicSubseqTransducers();
+        void printDigraph(const std::string& graphVizFolder);
+        void generate(const std::string& filePath);
 
     private:
     
@@ -39,11 +39,9 @@ class MAST {
         STATE *initialState;
 
         void setTransition(STATE *state, char c, unsigned int value, STATE *nextState);
-        STATE *getNextStateTransition(STATE *state, char c);
-        unsigned int getValueTransition(STATE *state, char c);
         void setFinal(STATE *state, bool isFinal);
         STATE *findMinimized(STATE *s);
         void cleanState(STATE *state);
 };
 
-#endif /* MAST_H */
+#endif /* MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H */
