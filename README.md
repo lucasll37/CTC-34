@@ -6,3 +6,6 @@ make run-mast: executa o programa compilado (mast)
 make run-lev: executa o programa compilado (lev)
 make clean: apaga arquivo executável gerado
 make graph: gera o grafo
+
+
+cOUISE
