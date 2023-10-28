@@ -90,13 +90,13 @@ void LevenshteinAutomaton::generate(void) {
     std::map<std::vector<int>, int> states;
     int counter = 0;
     std::vector<int> matching;
-    std::vector<int> initialState(start());
-    explore(initialState, states, counter, matching, transitionsStates);
+    std::vector<int> state(start());
+    explore(state, states, counter, matching, transitionsStates);
 
     statesAddress.resize(counter);
 
     for(int i = 0; i < counter; i++) {
-        statesAddress[i] = new STATE();
+        statesAddress[i] = new STATE_LEV();
         statesAddress[i]->isMatch = false;
         statesAddress[i]->transitions.clear();
     }
@@ -115,11 +115,11 @@ void LevenshteinAutomaton::generate(void) {
         statesAddress[i]->isMatch = true;
     }
 
-    DFA = statesAddress[0];
+    initialState = statesAddress[0];
 }
 
 void LevenshteinAutomaton::printDigraph(const std::string& graphVizFolder) {
-    std::ofstream file(graphVizFolder + "/lev.dot");
+    std::ofstream file(graphVizFolder + "/poc-lev.dot");
     file << "digraph G {\n";
     file << "\trankdir=TB;\n";
     file << "\tsize=\"8,5\"\n";

@@ -1,5 +1,5 @@
-#ifndef EXAME_LEVENSHTEIN_H
-#define EXAME_LEVENSHTEIN_H
+#ifndef LEVENSHTEIN_H
+#define LEVENSHTEIN_H
 
 #include <iostream>
 #include <vector>
@@ -12,8 +12,8 @@
 #include <utility>
 
 
-struct STATE {
-    std::map<char, STATE *> transitions;
+struct STATE_LEV {
+    std::map<char, STATE_LEV *> transitions;
     bool isMatch;
 };
 
@@ -21,7 +21,7 @@ class LevenshteinAutomaton {
 
 public:
     
-    STATE *DFA;
+    STATE_LEV *initialState;
     LevenshteinAutomaton(const std::string& s, int n);
     ~LevenshteinAutomaton(void);
     void generate(void);
@@ -31,7 +31,7 @@ private:
 
     std::string s;
     int max_edits;
-    std::vector<STATE *> statesAddress;
+    std::vector<STATE_LEV *> statesAddress;
     std::string graphVizFolder;
     std::vector<std::tuple<int, int, char>> transitionsStates;
     

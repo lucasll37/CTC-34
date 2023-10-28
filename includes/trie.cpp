@@ -1,72 +1,41 @@
-#include "minAcyclicSubseqTransducers.h"
+#include "trie.h"
 
 
-MinAcyclicSubseqTransducers::MinAcyclicSubseqTransducers() {
+Trie::Trie() {
     initialState = new STATE();
     states[initialState] = 0;
 }
 
-void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
+void Trie::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
     state->transactions[c] = std::make_pair(value, nextState);
 }
 
-void MinAcyclicSubseqTransducers::setFinal(STATE *state, bool isFinal) {
+void Trie::setFinal(STATE *state, bool isFinal) {
     state->isFinal = isFinal;
 }
 
-STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
+STATE * Trie::includeState(STATE *s) {
     
-    STATE *r = nullptr;
-    bool isEqual;
-
-    for(auto &state: states) {
-
-        if(state.first->isFinal != s->isFinal) {
-            continue;
-        }
-
-        isEqual = true;
-
-        for(auto &transictionPair: s->transactions) {
-            if(state.first->transactions.find(transictionPair.first) == state.first->transactions.end()) {
-                isEqual = false;
-                break;
-            }
-
-            else if(state.first->transactions[transictionPair.first] != transictionPair.second) {
-                isEqual = false;
-                break;
-            }
-        }
-
-        if(isEqual) {
-            r = state.first;
-            break;
-        }
+    STATE *r = new STATE();
+    r->isFinal = s->isFinal;
+    
+    for(auto &transictionPair: s->transactions) {
+        r->transactions[transictionPair.first] = transictionPair.second;
     }
 
-    if(r == nullptr) {
-        r = new STATE();
-        r->isFinal = s->isFinal;
-        
-        for(auto &transictionPair: s->transactions) {
-            r->transactions[transictionPair.first] = transictionPair.second;
-        }
-
-        states[r] = nStates++;
-    }
+    states[r] = nStates++;
 
     return r;
 }
 
-void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
+void Trie::cleanState(STATE *state) {
     state->isFinal = false;
     state->transactions.clear();
 }
 
-void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
+void Trie::printDigraph(const std::string& graphVizFolder) {
 
-    std::ofstream digraph(graphVizFolder + "/mast.dot");
+    std::ofstream digraph(graphVizFolder + "/poc-trie.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
     digraph << "node [shape=circle];\n";
@@ -90,13 +59,13 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     digraph << "}\n";
 }
 
-void MinAcyclicSubseqTransducers::generate(const std::string& filePath) {
+std::size_t Trie::generate(const std::string& filePath) {
     
     std::ifstream ordenatedWords(filePath);
 
     if (!ordenatedWords.is_open()) {
-        std::cout << "Erro ao abrir o arquivo para leitura." << std::endl;
-        return;
+        std::cout << "Error opening the file for reading." << std::endl;
+        return 0;
     }
 
     std::string previousWord = "";
@@ -108,7 +77,7 @@ void MinAcyclicSubseqTransducers::generate(const std::string& filePath) {
     }
 
     while(std::getline(ordenatedWords, currentWord)) {
-        
+
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
@@ -116,7 +85,7 @@ void MinAcyclicSubseqTransducers::generate(const std::string& filePath) {
         }
 
         for(std::size_t i = previousWord.size(); i > prefixLengthPlus1; i--) {
-            setTransition(tempStates[i-1], previousWord[i-1], 0, findMinimized(tempStates[i]));
+            setTransition(tempStates[i-1], previousWord[i-1], 0, includeState(tempStates[i]));
         }
 
         for(std::size_t i = prefixLengthPlus1; i < currentWord.size(); i++) {
@@ -132,8 +101,10 @@ void MinAcyclicSubseqTransducers::generate(const std::string& filePath) {
 
 
     for(std::size_t i = previousWord.size(); i > 0; i--) {
-        setTransition(tempStates[i-1], previousWord[i-1], 0, findMinimized(tempStates[i]));
+        setTransition(tempStates[i-1], previousWord[i-1], 0, includeState(tempStates[i]));
     }
 
-    initialState = findMinimized(tempStates[0]);
+    initialState = includeState(tempStates[0]);
+
+    return nStates;
 }
