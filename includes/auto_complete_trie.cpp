@@ -6,11 +6,10 @@ void AutoComplete::execute(void){
     auto start_ind = std::chrono::high_resolution_clock::now(); //
     //////////////// START OF TIME COUNTING //////////////////////
 
-    // MinAcyclicSubseqTransducers mast;
-    Trie mast;
-    STATE *st_mast = mast.initialState;
+    Trie trie;
+    STATE *st_mast = trie.initialState;
 
-    std::size_t nStates = mast.generate("./data/american-english.txt");
+    std::size_t nStates = trie.generate("./data/american-english.txt");
     
     ///////////// END OF TIME COUNTING ///////////////////////////
     auto stop_ind = std::chrono::high_resolution_clock::now(); ///
@@ -25,12 +24,13 @@ void AutoComplete::execute(void){
 
     auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
 
-    std::cout << "\n\nAuto complete for the English language with word suggestions with levenshtein distance up to 1 (one)" << std::endl;
-    std::cout << "\nData structure: TRIE" << std::endl;
-    std::cout << "\nNumber of states: " << nStates << " states." << std::endl;
-    std::cout << "Index creation time: " << duration_ind.count() << " milliseconds." << std::endl;
-    std::cout << "\n\nType the desired word or press \"ESC\" or \"ENTER\" to exit" << std::endl; 
-    std::cout << "\nINPUT:\n" << std::endl;
+    std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
+    std::cout << "Data structure: " << "\033[32m" <<  "TRIE" <<  "\033[0m" << std::endl;
+    std::cout << "Number of words: " << "\033[32m" << trie.nWords << " words." << "\033[0m" << std::endl;
+    std::cout << "Number of states: " << "\033[32m" << nStates << " states." << "\033[0m" << std::endl;
+    std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds." << "\033[0m" << std::endl;
+    std::cout << "\n\nType the desired word. Press \"ESC\" or \"ENTER\" to exit" << std::endl;
+    std::cout << "\n\tINPUT: ";
 
 
     char c;
@@ -38,6 +38,7 @@ void AutoComplete::execute(void){
     std::string lWord, rWord;
     std::vector<std::string> bagOfWords;
     STATE_LEV *st_lev;
+    std::size_t count;
 
     while(true) {
         c = getch();
@@ -59,12 +60,13 @@ void AutoComplete::execute(void){
             if(system("clear")) return;
         #endif
         
-        std::cout << "\n\nAuto complete for the English language with word suggestions with levenshtein distance up to 1 (one)" << std::endl;
-        std::cout << "\nData structure: TRIE" << std::endl;
-        std::cout << "\nNumber of states: " << nStates << " states." << std::endl;
-        std::cout << "Index creation time: " << duration_ind.count() << " milliseconds." << std::endl;
+        std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
+        std::cout << "Data structure: " << "\033[32m" <<  "TRIE" <<  "\033[0m" << std::endl;
+        std::cout << "Number of words: " << "\033[32m" << trie.nWords << " words." << "\033[0m" << std::endl;
+        std::cout << "Number of states: " << "\033[32m" << nStates << " states." << "\033[0m" << std::endl;
+        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds." << "\033[0m" << std::endl;
         std::cout << "\n\nType the desired word or press \"ESC\" or \"ENTER\" to exit" << std::endl;
-        std::cout << "\nINPUT: " << input << "\n" << std::endl;
+        std::cout << "\n\tINPUT: " << "\033[32m" << input << "\033[0m" << std::endl;
 
         lWord = "";
         rWord = "";
@@ -76,7 +78,7 @@ void AutoComplete::execute(void){
 
         LevenshteinAutomaton lev(input, 1);
         lev.generate();
-        st_mast = mast.initialState;
+        st_mast = trie.initialState;
         st_lev = lev.initialState;
         dfs(st_mast, st_lev, lWord, rWord, bagOfWords);
             
@@ -85,17 +87,17 @@ void AutoComplete::execute(void){
         //////////////////////////////////////////////////////////////
 
         auto duration_aut = std::chrono::duration_cast<std::chrono::microseconds>(stop_aut - start_aut);
-        std::cout << "Autocomplete run time (" << duration_aut.count() << " microseconds):\n\n" << std::endl;
+        std::cout << "\nAutocomplete run time (" << "\033[32m" << duration_aut.count() << " microseconds" << "\033[0m" << "):\n" << std::endl;
+
+        count = 0;
 
         for(auto word: bagOfWords) {
-            std::cout << word << std::endl;
+            std::cout << "\t(" << ++count << ") " << word << std::endl;
         }
 
         if(bagOfWords.size() == 0) {
-            std::cout << "(without suggestion ...)" << std::endl;
-        }
-
-        std::cout << "\033[H";
+            std::cout << "\t(" << "\033[31m" << "without suggestion ..." << "\033[0m" << ")" << std::endl;
+        }        
     }
 
     return;

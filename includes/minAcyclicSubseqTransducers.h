@@ -70,6 +70,7 @@ class MinAcyclicSubseqTransducers {
         
         STATE *initialState;
         std::size_t nStates = 0;
+        std::size_t nWords;
 
         MinAcyclicSubseqTransducers();
         void printDigraph(const std::string& graphVizFolder);

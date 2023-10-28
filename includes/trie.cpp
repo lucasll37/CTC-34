@@ -77,7 +77,7 @@ std::size_t Trie::generate(const std::string& filePath) {
     }
 
     while(std::getline(ordenatedWords, currentWord)) {
-
+        nWords++;
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
