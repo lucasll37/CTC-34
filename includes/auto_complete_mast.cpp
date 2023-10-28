@@ -1,6 +1,6 @@
 #include "auto_complete_mast.h"
 
-void AutoComplete::execute(void){
+void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
    
     //////////////////////////////////////////////////////////////
     auto start_ind = std::chrono::high_resolution_clock::now(); //
@@ -9,7 +9,7 @@ void AutoComplete::execute(void){
     MinAcyclicSubseqTransducers mast;
     STATE *st_mast = mast.initialState;
 
-    std::size_t nStates = mast.generate("./data/american-english.txt");
+    std::size_t nStates = mast.generate(pathToOrdenatedWords);
     
     ///////////// END OF TIME COUNTING ///////////////////////////
     auto stop_ind = std::chrono::high_resolution_clock::now(); ///
@@ -61,7 +61,7 @@ void AutoComplete::execute(void){
         #endif
         
         std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
-        std::cout << "Data structure: " << "\033[32m" <<  "TRIE" <<  "\033[0m" << std::endl;
+        std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
         std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words." << "\033[0m" << std::endl;
         std::cout << "Number of states: " << "\033[32m" << nStates << " states." << "\033[0m" << std::endl;
         std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds." << "\033[0m" << std::endl;
@@ -76,7 +76,7 @@ void AutoComplete::execute(void){
         auto start_aut = std::chrono::high_resolution_clock::now(); //
         //////////////// START OF TIME COUNTING //////////////////////
 
-        LevenshteinAutomaton lev(input, 1);
+        LevenshteinAutomaton lev(input, maxLevenshteinDistance);
         lev.generate();
         st_mast = mast.initialState;
         st_lev = lev.initialState;
@@ -110,7 +110,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         bagOfWords.push_back(lWord + rWord);
     }
 
-    if(st_lev->transitions.size() == 1) {
+    if(st_lev->transitions.size() == 1 && st_lev->transitions['*'] == st_lev) {
         return;
     }
 

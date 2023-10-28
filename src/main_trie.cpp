@@ -1,8 +1,8 @@
-#include "auto_complete_trie.h"
+#include <auto_complete_trie.h>
 
 int main() {
     AutoComplete auto_complete;
-    auto_complete.execute();
+    auto_complete.execute("./data/american-english.txt", 1);
 
     return 0;
 }

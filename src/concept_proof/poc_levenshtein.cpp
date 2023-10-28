@@ -1,7 +1,13 @@
-#include "levenshtein.h"
+#include <levenshtein.h>
 
-int main() {
-    LevenshteinAutomaton lev("wood", 1);
+int main(int argc, char *argv[]) {
+    std::string word;
+
+    if(argc == 2) word = argv[1];
+    else word = "Test";
+    
+    LevenshteinAutomaton lev(word, 1);
+
     lev.generate();
     lev.printDigraph("./graphs/graphViz");
     

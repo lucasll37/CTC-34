@@ -1,4 +1,4 @@
-#include "trie.h"
+#include <trie.h>
 
 int main() {
     Trie trie;

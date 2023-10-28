@@ -2,8 +2,21 @@
 
 
 MinAcyclicSubseqTransducers::MinAcyclicSubseqTransducers() {
-    initialState = new STATE();
-    states[initialState] = 0;
+    // initialState = new STATE();
+
+    for(auto &tempState : tempStates) {
+        tempState = new STATE();
+    }
+
+    // states[initialState] = 0;
+}
+
+MinAcyclicSubseqTransducers::~MinAcyclicSubseqTransducers() {
+    // initialState = new STATE();
+
+    for(auto &tempState : tempStates) {
+        delete tempState;
+    }
 }
 
 void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
@@ -18,11 +31,11 @@ STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
     
     STATE *r = nullptr;
 
-    if(states.find(s) != states.end() && states[s] != 0) {
+    if(states.find(s) != states.end()) {
         r = s;
     }
 
-    if(r == nullptr) {
+    else {
         r = new STATE();
         r->isFinal = s->isFinal;
         
@@ -43,7 +56,7 @@ void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
 
 void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
 
-    std::ofstream digraph(graphVizFolder + "/poc-mast.dot");
+    std::ofstream digraph(graphVizFolder + "/poc_mast.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
     digraph << "node [shape=circle];\n";
@@ -75,22 +88,21 @@ std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
         std::cout << "Error opening the file for reading." << std::endl;
         return 0;
     }
-
+    
     std::string previousWord = "";
     std::string currentWord;
     std::size_t prefixLengthPlus1;
 
-    for(auto &tempState : tempStates) {
-        tempState = new STATE();
-    }
+    // for(auto &tempState : tempStates) {
+    //     tempState = new STATE();
+    // }
 
     while(std::getline(ordenatedWords, currentWord)) {
-        std::cout << currentWord << std::endl; // apaga!!!!!!!!
         nWords++;
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
-                prefixLengthPlus1 += 1;
+                prefixLengthPlus1++;
         }
 
         for(std::size_t i = previousWord.size(); i > prefixLengthPlus1; i--) {

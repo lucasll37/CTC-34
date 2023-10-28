@@ -35,7 +35,7 @@ void Trie::cleanState(STATE *state) {
 
 void Trie::printDigraph(const std::string& graphVizFolder) {
 
-    std::ofstream digraph(graphVizFolder + "/poc-trie.dot");
+    std::ofstream digraph(graphVizFolder + "/poc_trie.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
     digraph << "node [shape=circle];\n";
@@ -104,7 +104,7 @@ std::size_t Trie::generate(const std::string& filePath) {
         setTransition(tempStates[i-1], previousWord[i-1], 0, includeState(tempStates[i]));
     }
 
-    initialState = includeState(tempStates[0]);
+    initialState = tempStates[0];
 
     return nStates;
 }

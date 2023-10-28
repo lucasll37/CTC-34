@@ -36,24 +36,24 @@ RM = rm -f
 poc-lev:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_levenshtein.cpp $(SOURCES_LEV) -o $(EXECUTABLE_LEV)
 	$(EXECUTABLE_LEV)
-	dot -Tpng ./graphs/graphViz/poc-lev.dot -o ./graphs/poc-lev.png
+	dot -Tpng ./graphs/graphViz/poc-lev.dot -o ./graphs/poc_lev.png
 
 poc-mast:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_mast.cpp $(SOURCES_MAST) -o $(EXECUTABLE_MAST)
 	$(EXECUTABLE_MAST)
-	dot -Tpng ./graphs/graphViz/poc-mast.dot -o ./graphs/poc-mast.png
+	dot -Tpng ./graphs/graphViz/poc_mast.dot -o ./graphs/poc_mast.png
 
 poc-trie:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_trie.cpp $(SOURCES_TRIE) -o $(EXECUTABLE_TRIE)
 	$(EXECUTABLE_TRIE)
-	dot -Tpng ./graphs/graphViz/poc-trie.dot -o ./graphs/poc-trie.png
+	dot -Tpng ./graphs/graphViz/poc_trie.dot -o ./graphs/poc_trie.png
 
 build-trie:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_trie.cpp $(SOURCES_AUTO_COMPLETE_TRIE)  -o $(EXECUTABLE_AUTO_COMPLETE_TRIE)
 	$(EXECUTABLE_AUTO_COMPLETE_TRIE)
 
 build-mast:
-	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_trie.cpp $(SOURCES_AUTO_COMPLETE_MAST)  -o $(EXECUTABLE_AUTO_COMPLETE_MAST)
+	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_mast.cpp $(SOURCES_AUTO_COMPLETE_MAST)  -o $(EXECUTABLE_AUTO_COMPLETE_MAST)
 	$(EXECUTABLE_AUTO_COMPLETE_MAST)
 
 run-trie:

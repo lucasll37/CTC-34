@@ -1,4 +1,4 @@
-#include "minAcyclicSubseqTransducers.h"
+#include <minAcyclicSubseqTransducers.h>
 
 int main() {
     MinAcyclicSubseqTransducers mast;

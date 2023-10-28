@@ -9,7 +9,7 @@
 #include <fstream>
 #include <string>
 
-#define MAX_WORD_SIZE 30
+#define MAX_WORD_SIZE 100
 
 struct STATE {
 
@@ -45,24 +45,31 @@ struct StateEqual {
         if(lhs->isFinal != rhs->isFinal) {
             return false;
         }
+
+        if(lhs->transactions.size() != rhs->transactions.size()) {
+            return false;
+        }
         
-        // return lhs->transactions == rhs->transactions;
-
         for(const auto& pair : rhs->transactions) {
-            if(pair.first != lhs->transactions.find(pair.first)->first) {
+            auto lhs_it = lhs->transactions.find(pair.first);
+            if (lhs_it == lhs->transactions.end()) {
+                return false;
+            }
+            
+            if (pair.second.first != lhs_it->second.first) {
+                return false;
+            }
+            
+            if (pair.second.second != lhs_it->second.second) {
                 return false;
             }
         }
 
-        for(const auto& pair : lhs->transactions) {
-            if(pair.first != rhs->transactions.find(pair.first)->first) {
-                return false;
-            }
-        }
 
         return true;
     }
 };
+
 
 class MinAcyclicSubseqTransducers {
 
@@ -70,9 +77,10 @@ class MinAcyclicSubseqTransducers {
         
         STATE *initialState;
         std::size_t nStates = 0;
-        std::size_t nWords;
+        std::size_t nWords = 0;
 
         MinAcyclicSubseqTransducers();
+        ~MinAcyclicSubseqTransducers();
         void printDigraph(const std::string& graphVizFolder);
         std::size_t generate(const std::string& filePath);
 

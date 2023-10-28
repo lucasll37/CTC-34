@@ -68,7 +68,7 @@ class Trie {
         Trie();
         void printDigraph(const std::string& graphVizFolder);
         std::size_t generate(const std::string& filePath);
-        std::size_t nWords;
+        std::size_t nWords = 0;
 
     private:
     

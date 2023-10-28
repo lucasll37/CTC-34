@@ -33,7 +33,7 @@ class AutoComplete {
 
 public:
 
-    void execute(void);
+    void execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance);
 
 private:
 

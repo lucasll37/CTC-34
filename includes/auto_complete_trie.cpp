@@ -1,6 +1,6 @@
 #include "auto_complete_trie.h"
 
-void AutoComplete::execute(void){
+void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance) {
    
     //////////////////////////////////////////////////////////////
     auto start_ind = std::chrono::high_resolution_clock::now(); //
@@ -9,7 +9,7 @@ void AutoComplete::execute(void){
     Trie trie;
     STATE *st_mast = trie.initialState;
 
-    std::size_t nStates = trie.generate("./data/american-english.txt");
+    std::size_t nStates = trie.generate(pathToOrdenatedWords);
     
     ///////////// END OF TIME COUNTING ///////////////////////////
     auto stop_ind = std::chrono::high_resolution_clock::now(); ///
@@ -76,7 +76,7 @@ void AutoComplete::execute(void){
         auto start_aut = std::chrono::high_resolution_clock::now(); //
         //////////////// START OF TIME COUNTING //////////////////////
 
-        LevenshteinAutomaton lev(input, 1);
+        LevenshteinAutomaton lev(input, maxLevenshteinDistance);
         lev.generate();
         st_mast = trie.initialState;
         st_lev = lev.initialState;
@@ -110,7 +110,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         bagOfWords.push_back(lWord + rWord);
     }
 
-    if(st_lev->transitions.size() == 1) {
+    if(st_lev->transitions.size() == 1 && st_lev->transitions['*'] == st_lev) {
         return;
     }
 
