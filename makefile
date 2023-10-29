@@ -36,7 +36,7 @@ RM = rm -f
 poc-lev:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_levenshtein.cpp $(SOURCES_LEV) -o $(EXECUTABLE_LEV)
 	$(EXECUTABLE_LEV)
-	dot -Tpng ./graphs/graphViz/poc-lev.dot -o ./graphs/poc_lev.png
+	dot -Tpng ./graphs/graphViz/poc_lev.dot -o ./graphs/poc_lev.png
 
 poc-mast:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_mast.cpp $(SOURCES_MAST) -o $(EXECUTABLE_MAST)

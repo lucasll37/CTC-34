@@ -110,7 +110,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         bagOfWords.push_back(lWord + rWord);
     }
 
-    if(st_lev->transitions.size() == 1 && st_lev->transitions['*'] == st_lev) {
+    if(st_lev->transitions['*'] == st_lev) {
         return;
     }
 
