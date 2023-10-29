@@ -16,10 +16,10 @@ struct STATE {
 
     STATE() {
         isFinal = false;
-        transactions.clear();
+        transictions.clear();
     }
 
-    std::unordered_map<char, std::pair<unsigned int, STATE *>> transactions;
+    std::unordered_map<char, std::pair<unsigned int, STATE *>> transictions;
     bool isFinal;
 };
 
@@ -31,7 +31,7 @@ struct StateHasher {
         hashValue ^= std::hash<bool>()(state->isFinal) + 0x9e3779b9;
         
         // Hash para cada item no unordered_map
-        for(const auto& pair : state->transactions) {
+        for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
             hashValue ^= std::hash<unsigned int>()(pair.second.first) + 0x9e3779b9;
             hashValue ^= std::hash<STATE*>()(pair.second.second) + 0x9e3779b9;
@@ -47,10 +47,10 @@ struct StateEqual {
             return false;
         }
         
-        return lhs->transactions == rhs->transactions;
+        return lhs->transictions == rhs->transictions;
 
-        for(const auto& pair : rhs->transactions) {
-            if(pair.first != rhs->transactions.find(pair.first)->first) {
+        for(const auto& pair : rhs->transictions) {
+            if(pair.first != rhs->transictions.find(pair.first)->first) {
                 return false;
             }
         }
@@ -66,6 +66,7 @@ class Trie {
         STATE *initialState;
 
         Trie();
+        ~Trie();
         void printDigraph(const std::string& graphVizFolder);
         std::size_t generate(const std::string& filePath);
         std::size_t nWords = 0;

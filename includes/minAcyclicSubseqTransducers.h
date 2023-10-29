@@ -15,22 +15,20 @@ struct STATE {
 
     STATE() {
         isFinal = false;
-        transactions.clear();
+        transictions.clear();
     }
 
-    std::unordered_map<char, std::pair<unsigned int, STATE *>> transactions;
     bool isFinal;
+    std::unordered_map<char, std::pair<unsigned int, STATE *>> transictions;
 };
 
 struct StateHasher {
     size_t operator()(const STATE *state) const {
         size_t hashValue = 0;
         
-        // Hash para o campo isFinal
         hashValue ^= std::hash<bool>()(state->isFinal) + 0x9e3779b9;
         
-        // Hash para cada item no unordered_map
-        for(const auto& pair : state->transactions) {
+        for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
             hashValue ^= std::hash<unsigned int>()(pair.second.first) + 0x9e3779b9;
             hashValue ^= std::hash<STATE*>()(pair.second.second) + 0x9e3779b9;
@@ -46,25 +44,17 @@ struct StateEqual {
             return false;
         }
 
-        if(lhs->transactions.size() != rhs->transactions.size()) {
+        if(lhs->transictions.size() != rhs->transictions.size()) {
             return false;
         }
         
-        for(const auto& pair : rhs->transactions) {
-            auto lhs_it = lhs->transactions.find(pair.first);
-            if (lhs_it == lhs->transactions.end()) {
-                return false;
-            }
-            
-            if (pair.second.first != lhs_it->second.first) {
-                return false;
-            }
-            
-            if (pair.second.second != lhs_it->second.second) {
-                return false;
-            }
-        }
+        for(const auto& pair : rhs->transictions) {
+            auto lhs_it = lhs->transictions.find(pair.first);
 
+            if (lhs_it == lhs->transictions.end()) return false;
+            if (pair.second.first != lhs_it->second.first) return false;        
+            if (pair.second.second != lhs_it->second.second) return false;
+        }
 
         return true;
     }

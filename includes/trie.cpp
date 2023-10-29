@@ -2,25 +2,31 @@
 
 
 Trie::Trie() {
-    initialState = new STATE();
-    states[initialState] = 0;
+    for(auto &tempState : tempStates) {
+        tempState = new STATE();
+    }
+}
+
+Trie::~Trie() {
+    for(auto &tempState : tempStates) {
+        delete tempState;
+    }
 }
 
 void Trie::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
-    state->transactions[c] = std::make_pair(value, nextState);
+    state->transictions[c] = std::make_pair(value, nextState);
 }
 
 void Trie::setFinal(STATE *state, bool isFinal) {
     state->isFinal = isFinal;
 }
 
-STATE * Trie::includeState(STATE *s) {
-    
+STATE *Trie::includeState(STATE *s) {
     STATE *r = new STATE();
     r->isFinal = s->isFinal;
     
-    for(auto &transictionPair: s->transactions) {
-        r->transactions[transictionPair.first] = transictionPair.second;
+    for(auto &transictionPair: s->transictions) {
+        r->transictions[transictionPair.first] = transictionPair.second;
     }
 
     states[r] = nStates++;
@@ -30,7 +36,7 @@ STATE * Trie::includeState(STATE *s) {
 
 void Trie::cleanState(STATE *state) {
     state->isFinal = false;
-    state->transactions.clear();
+    state->transictions.clear();
 }
 
 void Trie::printDigraph(const std::string& graphVizFolder) {
@@ -51,7 +57,7 @@ void Trie::printDigraph(const std::string& graphVizFolder) {
     }
 
     for(auto &state : states) {
-        for(auto &transition : state.first->transactions) {
+        for(auto &transition : state.first->transictions) {
             digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
         }
     }
@@ -67,21 +73,17 @@ std::size_t Trie::generate(const std::string& filePath) {
         std::cout << "Error opening the file for reading." << std::endl;
         return 0;
     }
-
+    
     std::string previousWord = "";
     std::string currentWord;
     std::size_t prefixLengthPlus1;
-
-    for(auto &tempState : tempStates) {
-        tempState = new STATE();
-    }
 
     while(std::getline(ordenatedWords, currentWord)) {
         nWords++;
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
-                prefixLengthPlus1 += 1;
+                prefixLengthPlus1++;
         }
 
         for(std::size_t i = previousWord.size(); i > prefixLengthPlus1; i--) {
@@ -99,12 +101,12 @@ std::size_t Trie::generate(const std::string& filePath) {
 
     ordenatedWords.close();
 
-
     for(std::size_t i = previousWord.size(); i > 0; i--) {
         setTransition(tempStates[i-1], previousWord[i-1], 0, includeState(tempStates[i]));
     }
 
-    initialState = tempStates[0];
+
+    initialState = includeState(tempStates[0]);
 
     return nStates;
 }

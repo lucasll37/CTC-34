@@ -114,7 +114,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         return;
     }
 
-    for(auto transictionPair: st_mast->transactions) {
+    for(auto transictionPair: st_mast->transictions) {
         STATE *nextState = transictionPair.second.second;
         STATE_LEV *nextStateLev;
 

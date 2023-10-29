@@ -2,25 +2,19 @@
 
 
 MinAcyclicSubseqTransducers::MinAcyclicSubseqTransducers() {
-    // initialState = new STATE();
-
     for(auto &tempState : tempStates) {
         tempState = new STATE();
     }
-
-    // states[initialState] = 0;
 }
 
 MinAcyclicSubseqTransducers::~MinAcyclicSubseqTransducers() {
-    // initialState = new STATE();
-
     for(auto &tempState : tempStates) {
         delete tempState;
     }
 }
 
 void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
-    state->transactions[c] = std::make_pair(value, nextState);
+    state->transictions[c] = std::make_pair(value, nextState);
 }
 
 void MinAcyclicSubseqTransducers::setFinal(STATE *state, bool isFinal) {
@@ -31,19 +25,22 @@ STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
     
     STATE *r = nullptr;
 
+
     if(states.find(s) != states.end()) {
-        r = s;
+        auto it = states.find(s);
+        r = it->first;
     }
 
     else {
         r = new STATE();
         r->isFinal = s->isFinal;
         
-        for(auto &transictionPair: s->transactions) {
-            r->transactions[transictionPair.first] = transictionPair.second;
+        for(auto &transictionPair: s->transictions) {
+            r->transictions[transictionPair.first] = transictionPair.second;
         }
 
         states[r] = nStates++;
+
     }
 
     return r;
@@ -51,7 +48,7 @@ STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
 
 void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
     state->isFinal = false;
-    state->transactions.clear();
+    state->transictions.clear();
 }
 
 void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
@@ -72,7 +69,7 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     }
 
     for(auto &state : states) {
-        for(auto &transition : state.first->transactions) {
+        for(auto &transition : state.first->transictions) {
             digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
         }
     }
@@ -92,10 +89,6 @@ std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
     std::string previousWord = "";
     std::string currentWord;
     std::size_t prefixLengthPlus1;
-
-    // for(auto &tempState : tempStates) {
-    //     tempState = new STATE();
-    // }
 
     while(std::getline(ordenatedWords, currentWord)) {
         nWords++;
