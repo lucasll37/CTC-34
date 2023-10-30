@@ -1,5 +1,6 @@
 #include "auto_complete_mast.h"
 
+
 void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
    
     //////////////////////////////////////////////////////////////
@@ -23,13 +24,27 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     #endif
 
     auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
+    auto memoryInfo = getMemoryUsage();
+    bool useLevenshtein = true;
+
 
     std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
     std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
-    std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words." << "\033[0m" << std::endl;
-    std::cout << "Number of states: " << "\033[32m" << nStates << " states." << "\033[0m" << std::endl;
-    std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds." << "\033[0m" << std::endl;
-    std::cout << "\n\nType the desired word. Press \"ESC\" or \"ENTER\" to exit" << std::endl;
+    std::cout << "PID: " << "\033[32m" << memoryInfo.second << "\033[0m" << "." << std::endl;
+    std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
+    std::cout << "Number of states: " << "\033[32m" << nStates << " states" << "\033[0m" << "." <<  std::endl;
+    std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
+    std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
+    std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1, 2 or 3 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+
+    std::cout << "\nLevenshtein Algorithm: ";
+    if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
+    else std::cout << "\033[31m" << "OFF" << "\033[0m" << std::endl;
+
+    std::cout << "Levenshtein Distance: ";
+    if(useLevenshtein) std::cout << "\033[32m" << maxLevenshteinDistance << "\033[0m" << std::endl;
+    else std::cout << "\033[31m" << "-" << "\033[0m" << std::endl;
+
     std::cout << "\n\tINPUT: ";
 
 
@@ -44,15 +59,36 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         c = getch();
         if (c == 27 || c == '\n') break; // ESC or ENTER
 
-        if(c == 127 && input.size() > 0) {
+        else if(c == 127 && input.size() > 0) {
             input.pop_back();
         }
-        
-        else if(c != 127) {
-            input += c;
+
+        else if(c == ' ') {
+            useLevenshtein = !useLevenshtein;
+        }
+
+        else if(c == '0') {
+            maxLevenshteinDistance = 0;
+        }
+
+        else if(c == '1') {
+            maxLevenshteinDistance = 1;
+        }
+
+        else if(c == '2') {
+            maxLevenshteinDistance = 2;
+        }
+
+        else if(c == '3') {
+            maxLevenshteinDistance = 3;
         }
         
+        else if(c != 127 && c != 27 && c != '\n' && c != ' ' && c != '0' && c != '1' && c != '2' && c != '3') {
+            input += c;
+        }
+
         else continue;
+    
 
         #ifdef _WIN32
             if(system("cls")) return;
@@ -62,11 +98,28 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         
         std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
         std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
-        std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words." << "\033[0m" << std::endl;
-        std::cout << "Number of states: " << "\033[32m" << nStates << " states." << "\033[0m" << std::endl;
-        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds." << "\033[0m" << std::endl;
-        std::cout << "\n\nType the desired word or press \"ESC\" or \"ENTER\" to exit" << std::endl;
-        std::cout << "\n\tINPUT: " << "\033[32m" << input << "\033[0m" << std::endl;
+        std::cout << "PID: " << "\033[32m" << memoryInfo.second << "\033[0m" << "." << std::endl;
+        std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
+        std::cout << "Number of states: " << "\033[32m" << nStates << " states" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
+        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
+        std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1, 2 or 3 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+
+        std::cout << "\nLevenshtein Algorithm: ";
+        if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
+        else std::cout << "\033[31m" << "OFF" << "\033[0m" << std::endl;
+
+        std::cout << "Levenshtein Distance: ";
+        if(useLevenshtein) std::cout << "\033[32m" << maxLevenshteinDistance << "\033[0m" << std::endl;
+        else std::cout << "\033[31m" << "-" << "\033[0m" << std::endl;
+
+        if(input.size() != 0) {
+            std::cout << "\n\tINPUT: " << "\033[32m" << input << "\033[0m" << std::endl;
+        }
+        else {
+            std::cout << "\n\tINPUT: ";
+            continue;
+        }
 
         lWord = "";
         rWord = "";
@@ -87,7 +140,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         //////////////////////////////////////////////////////////////
 
         auto duration_aut = std::chrono::duration_cast<std::chrono::microseconds>(stop_aut - start_aut);
-        std::cout << "\nAutocomplete run time (" << "\033[32m" << duration_aut.count() << " microseconds" << "\033[0m" << "):\n" << std::endl;
+        std::cout << "\nAutocomplete run time: " << "\033[32m" << duration_aut.count() << " microseconds" << "\033[0m" << "." << std::endl;
+        std::cout << "Suggestions (total: " << "\033[32m" << bagOfWords.size() << " word(s)" << "\033[0m" << "):\n" << std::endl;
 
         count = 0;
 

@@ -3,30 +3,11 @@
 
 #include "trie.h"
 #include "levenshtein.h"
-
+#include "utils.h"
 #include <string>
 #include <iostream>
 #include <chrono>
 
-#ifdef _WIN32
-    #include <conio.h>
-#else
-    #include <termios.h>
-    #include <unistd.h>
-
-    inline int getch(void) {
-        int ch;
-        struct termios oldt, newt;
-        tcgetattr(STDIN_FILENO, &oldt);
-        newt = oldt;
-        newt.c_lflag &= ~(ICANON | ECHO);
-        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
-        ch = getchar();
-        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-        return ch;
-    }
-
-#endif
 
 class AutoComplete {
 
@@ -40,7 +21,8 @@ private:
             STATE_LEV *st_lev,
             std::string &lWord,
             std::string rWord,
-            std::vector<std::string> &bagOfWords);
+            std::vector<std::string> &bagOfWords,
+            bool useLevenshtein);
 };
 
 #endif /* AUTO_COMPLETE_TRIE_H */
