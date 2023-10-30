@@ -107,7 +107,7 @@ std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
             setTransition(tempStates[i], currentWord[i], 0, tempStates[i+1]);
         }
 
-        setFinal(tempStates[currentWord.size()], true);
+        if(previousWord != currentWord) setFinal(tempStates[currentWord.size()], true); //alterado!!!
         previousWord = currentWord;
     }
 
