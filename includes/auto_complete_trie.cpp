@@ -152,7 +152,10 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
                 lWord += c;
                 st_mast = st_mast->transictions[c].second;
-            LevenshteinAutomaton lev(input, maxLevenshteinDistance);
+            }
+
+
+            LevenshteinAutomaton lev("a", 0);
             lev.generate();
             st_mast = trie.initialState;
             st_lev = lev.initialState;
