@@ -157,7 +157,6 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
             LevenshteinAutomaton lev("a", 0);
             lev.generate();
-            st_mast = trie.initialState;
             st_lev = lev.initialState;
             dfs(st_mast, st_lev, lWord, rWord, bagOfWords, useLevenshtein);
                 
@@ -188,7 +187,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         bagOfWords.push_back(lWord + rWord);
     }
 
-    if(st_lev->transitions['*'] == st_lev) {
+    if(st_lev->transitions['*'] == st_lev && useLevenshtein) {
         return;
     }
 
