@@ -1,5 +1,8 @@
 #include <iostream>
 #include <utility>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #ifdef _WIN32
     #include <windows.h>

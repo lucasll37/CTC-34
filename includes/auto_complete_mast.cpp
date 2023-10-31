@@ -8,7 +8,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     //////////////// START OF TIME COUNTING //////////////////////
 
     MinAcyclicSubseqTransducers mast;
-    STATE *st_mast = mast.initialState;
+    STATE *st_mast;
 
     std::size_t nStates = mast.generate(pathToOrdenatedWords);
     
@@ -23,10 +23,9 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
     #endif
 
-    auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
+    auto duration_ind = std::chrono::duration_cast<std::chrono::microseconds>(stop_ind - start_ind);
     auto memoryInfo = getMemoryUsage();
     bool useLevenshtein = true;
-
 
     std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
     std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
@@ -34,8 +33,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
     std::cout << "Number of states: " << "\033[32m" << nStates << " states" << "\033[0m" << "." <<  std::endl;
     std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
-    std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
-    std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1, 2 or 3 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+    std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " microseconds" << "\033[0m" << "." <<  std::endl;
+    std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0 or 1 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
 
     std::cout << "\nLevenshtein Algorithm: ";
     if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
@@ -59,7 +58,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         c = getch();
         if (c == 27 || c == '\n') break; // ESC or ENTER
 
-        else if(c == 127 && input.size() > 0) {
+        else if(c == 127 && input.size() > 0) { // BACKSPACE
             input.pop_back();
         }
 
@@ -74,21 +73,11 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else if(c == '1') {
             maxLevenshteinDistance = 1;
         }
-
-        else if(c == '2') {
-            maxLevenshteinDistance = 2;
-        }
-
-        else if(c == '3') {
-            maxLevenshteinDistance = 3;
-        }
         
-        else if(c != 127 && c != 27 && c != '\n' && c != ' ' && c != '0' && c != '1' && c != '2' && c != '3') {
+        if(c != 127 && c != ' ' && c != '0' && c != '1' && input.size() < MAX_WORD_SIZE) {
             input += c;
         }
-
-        else continue;
-    
+        
 
         #ifdef _WIN32
             if(system("cls")) return;
@@ -101,9 +90,9 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         std::cout << "PID: " << "\033[32m" << memoryInfo.second << "\033[0m" << "." << std::endl;
         std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
         std::cout << "Number of states: " << "\033[32m" << nStates << " states" << "\033[0m" << "." <<  std::endl;
-        std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
-        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
-        std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1, 2 or 3 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+        std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " microseconds" << "\033[0m" << "." <<  std::endl;
+        std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0 or 1 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
 
         std::cout << "\nLevenshtein Algorithm: ";
         if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
@@ -121,6 +110,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
             continue;
         }
 
+        st_mast = mast.initialState;
         lWord = "";
         rWord = "";
         bagOfWords.clear();
@@ -129,12 +119,29 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         auto start_aut = std::chrono::high_resolution_clock::now(); //
         //////////////// START OF TIME COUNTING //////////////////////
 
-        LevenshteinAutomaton lev(input, maxLevenshteinDistance);
-        lev.generate();
-        st_mast = mast.initialState;
-        st_lev = lev.initialState;
-        dfs(st_mast, st_lev, lWord, rWord, bagOfWords);
-            
+        if(useLevenshtein) {   
+            LevenshteinAutomaton lev(input, maxLevenshteinDistance);
+            lev.generate();
+            st_lev = lev.initialState;
+        }
+
+        else {
+            LevenshteinAutomaton lev("A", 0);
+            lev.generate();
+            st_lev = lev.initialState;    
+
+            for(char c: input) {
+                if(st_mast->transictions.find(c) != st_mast->transictions.end()) {
+                    lWord += c;
+                    st_mast = st_mast->transictions[c].second;
+                }
+
+                else break;
+            }
+        }
+
+        dfs(st_mast, st_lev, lWord, rWord, bagOfWords, useLevenshtein);
+
         ///////////// END OF TIME COUNTING ///////////////////////////
         auto stop_aut = std::chrono::high_resolution_clock::now(); ///
         //////////////////////////////////////////////////////////////
@@ -158,13 +165,13 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 }
 
 
-void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, std::string rWord, std::vector<std::string> &bagOfWords) {
-
-    if(st_mast->isFinal && st_lev->isMatch) {
+void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, std::string rWord, std::vector<std::string> &bagOfWords, bool useLevenshtein) {
+    if(st_mast->isFinal && (st_lev->isMatch || !useLevenshtein)) {
         bagOfWords.push_back(lWord + rWord);
+
     }
 
-    if(st_lev->transitions['*'] == st_lev) {
+    if(st_lev->transitions['*'] == st_lev && useLevenshtein) {
         return;
     }
 
@@ -172,15 +179,16 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
         STATE *nextState = transictionPair.second.second;
         STATE_LEV *nextStateLev;
 
-        if(st_lev->transitions.find(transictionPair.first) == st_lev->transitions.end()) {
-            nextStateLev = st_lev->transitions['*'];
-        }
-
-        else {
+        if(st_lev->transitions.find(transictionPair.first) != st_lev->transitions.end()) {
             nextStateLev = st_lev->transitions[transictionPair.first];
         }
 
-        dfs(nextState, nextStateLev, lWord, rWord + transictionPair.first, bagOfWords);
+        else {
+            nextStateLev = st_lev->transitions['*'];
+        }
+
+        dfs(nextState, nextStateLev, lWord, rWord + transictionPair.first, bagOfWords, useLevenshtein);
+
     }
 
     return;

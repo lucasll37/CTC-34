@@ -122,7 +122,7 @@ void LevenshteinAutomaton::printDigraph(const std::string& graphVizFolder) {
     std::ofstream file(graphVizFolder + "/poc_lev.dot");
     file << "digraph G {\n";
     file << "\trankdir=TB;\n";
-    file << "\tsize=\"8,5\"\n";
+    // file << "\tsize=\"8,5\"\n";
     file << "\tnode [shape = doublecircle];\n";
 
 

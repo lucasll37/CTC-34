@@ -22,7 +22,8 @@ private:
             STATE_LEV *st_lev,
             std::string &lWord,
             std::string rWord,
-            std::vector<std::string> &bagOfWords);
+            std::vector<std::string> &bagOfWords,
+            bool useLevenshtein);
 };
 
 #endif /* EXAME_AUTO_COMPLETE_MAST_H */

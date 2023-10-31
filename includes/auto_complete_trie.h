@@ -17,7 +17,7 @@ public:
 
 private:
 
-    void dfs(STATE *st_mast,
+    void dfs(STATE *st_trie,
             STATE_LEV *st_lev,
             std::string &lWord,
             std::string rWord,

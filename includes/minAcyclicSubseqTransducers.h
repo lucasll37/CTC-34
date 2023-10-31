@@ -9,7 +9,7 @@
 #include <fstream>
 #include <string>
 
-#define MAX_WORD_SIZE 100
+#define MAX_WORD_SIZE 30
 
 struct STATE {
 

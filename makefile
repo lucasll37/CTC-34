@@ -27,7 +27,8 @@ SOURCES_AUTO_COMPLETE_MAST = $(SRC_LIB)/auto_complete_mast.cpp $(SRC_LIB)/levens
 CC = g++
 
 # Opções do compilador
-CFLAGS = -Wall -Wextra -std=c++11 -O3
+CFLAGS = -Wall -Wextra -std=c++11 -g
+# CFLAGS = -Wall -Wextra -std=c++11 -O3
 
 # Comando para limpar os arquivos compilados
 RM = rm -f
