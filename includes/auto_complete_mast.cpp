@@ -6,8 +6,9 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     //////////////////////////////////////////////////////////////
     auto start_ind = std::chrono::high_resolution_clock::now(); //
     //////////////// START OF TIME COUNTING //////////////////////
-
     MinAcyclicSubseqTransducers mast;
+    LevenshteinAutomaton *lev;
+
     STATE *st_mast;
 
     mast.generate(pathToOrdenatedWords);
@@ -93,7 +94,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
         std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
         std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl;
-        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " millieconds" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
         std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0 or 1 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
 
         std::cout << "\nLevenshtein Algorithm: ";
@@ -121,16 +122,16 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         auto start_aut = std::chrono::high_resolution_clock::now(); //
         //////////////// START OF TIME COUNTING //////////////////////
 
-        if(useLevenshtein) {   
-            LevenshteinAutomaton lev(input, maxLevenshteinDistance);
-            lev.generate();
-            st_lev = lev.initialState;
+        if(useLevenshtein) {    
+            lev = new LevenshteinAutomaton(input, maxLevenshteinDistance);
+            lev->generate();
+            st_lev = lev->initialState;
         }
 
         else {
-            LevenshteinAutomaton lev("A", 0);
-            lev.generate();
-            st_lev = lev.initialState;    
+            lev = new LevenshteinAutomaton("A", 0);
+            lev->generate();
+            st_lev = lev->initialState;    
 
             for(char c: input) {
                 if(st_mast->transictions.find(c) != st_mast->transictions.end()) {
@@ -143,6 +144,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         }
 
         dfs(st_mast, st_lev, lWord, rWord, bagOfWords, useLevenshtein);
+
+        delete lev;
 
         ///////////// END OF TIME COUNTING ///////////////////////////
         auto stop_aut = std::chrono::high_resolution_clock::now(); ///
@@ -184,8 +187,13 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
             nextStateLev = st_lev->transitions[transictionPair.first];
         }
 
-        else {
+        else if (st_lev->transitions.find('*') != st_lev->transitions.end()) {
             nextStateLev = st_lev->transitions['*'];
+        }
+
+        else {
+            std::cout << "ERROR: Levenshtein Automaton is not well formed." << std::endl;
+            break;
         }
 
         dfs(nextState, nextStateLev, lWord, rWord + transictionPair.first, bagOfWords, useLevenshtein);

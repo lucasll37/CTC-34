@@ -20,7 +20,7 @@ struct STATE {
     }
 
     bool isFinal;
-    std::unordered_map<char, std::pair<unsigned int, STATE *>> transictions;
+    std::unordered_map<char, std::pair<std::string, STATE *>> transictions;
 };
 
 struct StateHasher {
@@ -31,7 +31,7 @@ struct StateHasher {
         
         for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
-            hashValue ^= std::hash<unsigned int>()(pair.second.first) + 0x9e3779b9;
+            hashValue ^= std::hash<std::string>()(pair.second.first) + 0x9e3779b9;
             hashValue ^= std::hash<STATE*>()(pair.second.second) + 0x9e3779b9;
         }
         
@@ -61,7 +61,6 @@ struct StateEqual {
     }
 };
 
-
 class MinAcyclicSubseqTransducers {
 
     public:
@@ -80,8 +79,9 @@ class MinAcyclicSubseqTransducers {
 
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
-
-        void setTransition(STATE *state, char c, unsigned int value, STATE *nextState);
+        void setOutput(STATE *state, char c, std::string output);
+        std::string output(STATE *state, char c);
+        void setTransition(STATE *state, char c, STATE *nextState);
         void setFinal(STATE *state, bool isFinal);
         STATE *findMinimized(STATE *s);
         void cleanState(STATE *state);

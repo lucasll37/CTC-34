@@ -1,3 +1,4 @@
+
 for j:=1 to PrefixLengthPlus1-1 do begin
     CommonPrefix := OUTPUT(TempStates[j-1], CurrentWord[j]); /\ CurrentWord[j];
     WordSuffix := CommonPrefix(^-1) OUTPUT(TempStates[j-1], CurrentWord[j]);
