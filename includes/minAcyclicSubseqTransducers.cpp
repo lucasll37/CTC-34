@@ -11,6 +11,10 @@ MinAcyclicSubseqTransducers::~MinAcyclicSubseqTransducers() {
     for(auto &tempState : tempStates) {
         delete tempState;
     }
+
+    for(auto &state : states) {
+        delete state.first;
+    }
 }
 
 void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
