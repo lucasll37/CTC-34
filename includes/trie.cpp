@@ -11,6 +11,10 @@ Trie::~Trie() {
     for(auto &tempState : tempStates) {
         delete tempState;
     }
+
+    for(auto &state : states) {
+        delete state.first;
+    }
 }
 
 void Trie::setTransition(STATE *state, char c, unsigned int value, STATE *nextState) {
