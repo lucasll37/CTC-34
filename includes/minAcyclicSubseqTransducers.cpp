@@ -77,10 +77,8 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     digraph << "}\n";
 }
 
-std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
-    
+std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {    
     std::ifstream ordenatedWords(filePath);
-
     if (!ordenatedWords.is_open()) {
         std::cout << "Error opening the file for reading." << std::endl;
         return 0;

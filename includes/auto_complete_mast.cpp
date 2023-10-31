@@ -2,6 +2,8 @@
 
 
 void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
+
+    if(!checkOrdenated(pathToOrdenatedWords)) throw std::runtime_error("Um erro ocorreu!"); 
    
     //////////////////////////////////////////////////////////////
     auto start_ind = std::chrono::high_resolution_clock::now(); //
