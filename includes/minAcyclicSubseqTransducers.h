@@ -68,12 +68,13 @@ class MinAcyclicSubseqTransducers {
         
         STATE *initialState;
         std::size_t nStates = 0;
+        std::size_t nEdges = 0;
         std::size_t nWords = 0;
 
         MinAcyclicSubseqTransducers();
         ~MinAcyclicSubseqTransducers();
         void printDigraph(const std::string& graphVizFolder);
-        std::size_t generate(const std::string& filePath);
+        void generate(const std::string& filePath);
 
     private:
 

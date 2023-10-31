@@ -34,6 +34,7 @@ STATE *Trie::includeState(STATE *s) {
     }
 
     states[r] = nStates++;
+    nEdges += r->transictions.size();
 
     return r;
 }
@@ -48,6 +49,7 @@ void Trie::printDigraph(const std::string& graphVizFolder) {
     std::ofstream digraph(graphVizFolder + "/poc_trie.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
+    digraph << "charset=\"utf8\";\n";
     digraph << "node [shape=circle];\n";
     digraph <<  "ini [shape=point];\n";
     digraph << "ini -> q" << states[initialState] << ";\n";
@@ -69,13 +71,13 @@ void Trie::printDigraph(const std::string& graphVizFolder) {
     digraph << "}\n";
 }
 
-std::size_t Trie::generate(const std::string& filePath) {
+void Trie::generate(const std::string& filePath) {
     
     std::ifstream ordenatedWords(filePath);
 
     if (!ordenatedWords.is_open()) {
         std::cout << "Error opening the file for reading." << std::endl;
-        return 0;
+        return;
     }
     
     std::string previousWord = "";
@@ -109,8 +111,7 @@ std::size_t Trie::generate(const std::string& filePath) {
         setTransition(tempStates[i-1], previousWord[i-1], 0, includeState(tempStates[i]));
     }
 
-
     initialState = includeState(tempStates[0]);
 
-    return nStates;
+    return;
 }

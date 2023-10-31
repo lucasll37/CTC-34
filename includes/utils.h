@@ -29,5 +29,3 @@
 #endif
 
 std::pair<int, unsigned long> getMemoryUsage();
-bool checarOrdenacao(std::string palavraAnterior, std::string palavraAtual);
-bool checkOrdenated(std::string pathToFile);

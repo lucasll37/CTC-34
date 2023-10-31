@@ -67,13 +67,14 @@ class Trie {
 
         Trie();
         ~Trie();
-        void printDigraph(const std::string& graphVizFolder);
-        std::size_t generate(const std::string& filePath);
         std::size_t nWords = 0;
+        std::size_t nStates = 0;
+        std::size_t nEdges = 0;
+        void printDigraph(const std::string& graphVizFolder);
+        void generate(const std::string& filePath);
 
     private:
     
-        std::size_t nStates = 0;
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
 

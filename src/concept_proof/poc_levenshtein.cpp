@@ -4,7 +4,7 @@ int main(int argc, char *argv[]) {
     std::string word;
 
     if(argc == 2) word = argv[1];
-    else word = "dfdfdfdf";
+    else word = "étude";
     
     LevenshteinAutomaton lev(word, 1);
 

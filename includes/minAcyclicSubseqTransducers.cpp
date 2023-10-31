@@ -44,7 +44,7 @@ STATE * MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
         }
 
         states[r] = nStates++;
-
+        nEdges += r->transictions.size();
     }
 
     return r;
@@ -60,6 +60,7 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     std::ofstream digraph(graphVizFolder + "/poc_mast.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
+    digraph << "charset=\"utf8\";\n";
     digraph << "node [shape=circle];\n";
     digraph <<  "ini [shape=point];\n";
     digraph << "ini -> q" << states[initialState] << ";\n";
@@ -81,11 +82,11 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     digraph << "}\n";
 }
 
-std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {    
+void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {    
     std::ifstream ordenatedWords(filePath);
     if (!ordenatedWords.is_open()) {
         std::cout << "Error opening the file for reading." << std::endl;
-        return 0;
+        return;
     }
     
     std::string previousWord = "";
@@ -122,5 +123,5 @@ std::size_t MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
 
     initialState = findMinimized(tempStates[0]);
 
-    return nStates;
+    return;
 }
