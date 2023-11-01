@@ -27,5 +27,3 @@
     }
 
 #endif
-
-std::pair<int, unsigned long> getMemoryUsage();

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <chrono>
 
+#define MAX_WORD_WITHOUT_LEV 200
 
 class AutoComplete {
 
@@ -20,10 +21,14 @@ private:
 
     void dfs(STATE *st_mast,
             STATE_LEV *st_lev,
+            std::string &input,
             std::string &lWord,
             std::string rWord,
-            std::vector<std::string> &bagOfWords,
+            std::string index,
+            std::vector<std::pair<std::string, std::string>> &bagOfWords,
             bool useLevenshtein);
+            
 };
 
 #endif /* EXAME_AUTO_COMPLETE_MAST_H */
+

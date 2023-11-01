@@ -2,6 +2,7 @@
 #define TRIE_H
 
 #include <unordered_map>
+#include <map>
 #include <utility>
 #include <fstream>
 #include <iostream>
@@ -19,7 +20,7 @@ struct STATE {
         transictions.clear();
     }
 
-    std::unordered_map<char, std::pair<unsigned int, STATE *>> transictions;
+    std::map<char, std::pair<unsigned int, STATE *>> transictions;
     bool isFinal;
 };
 

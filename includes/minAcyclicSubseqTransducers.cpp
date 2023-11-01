@@ -81,7 +81,14 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
 
     for(auto &state : states) {
         for(auto &transition : state.first->transictions) {
-            digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
+            
+            if(transition.second.first != "") {
+                digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << " / " << transition.second.first << "\"];\n";
+            }
+
+            else {
+                digraph << "\tq" << state.second << " -> q" << states[transition.second.second] << " [label=\"" << transition.first << "\"];\n";
+            }
         }
     }
 
@@ -89,7 +96,7 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
 }
 
 std::string MinAcyclicSubseqTransducers::output(STATE *state, char c) {
-    return state->transictions[c].first; // sempre vai dar certo????
+    return state->transictions[c].first;
 }
 
 void MinAcyclicSubseqTransducers::setOutput(STATE *state, char c, std::string output) {
@@ -104,27 +111,16 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
     }
     
     std::string previousWord = "";
-    std::string previousOutput = "";
     std::string currentWord;
     std::string currentOutput;
+    std::string outputTemp;
     std::string commonPrefix;
     std::string wordSuffix;
     std::size_t prefixLengthPlus1;
     std::size_t aux;
-
-    ///////////////////////
-    std::unordered_map<std::string, std::string> outputMap;
-
-    outputMap["january"] = "1";
-    outputMap["july"] = "1111111";
-    outputMap["june"] = "111111";
-    ///////////////////////
-    
-
+   
     while(std::getline(ordenatedWords, currentWord)) {
-        currentOutput = outputMap[currentWord];
-        // currentOutput = std::to_string(nWords);
-        nWords++;
+        currentOutput = std::to_string(++nWords);
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
@@ -142,30 +138,30 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
 
         setFinal(tempStates[currentWord.size()], true);
 
-        aux = 0;
+        for (std::size_t i = 0; i < prefixLengthPlus1; i++) {
+            outputTemp = output(tempStates[i], currentWord[i]);
+            aux = 0;
 
-        while(aux < previousOutput.size() && aux < currentOutput.size() && currentOutput[aux] == previousOutput[aux]) {
-            aux++;
+            while(aux < currentOutput.size() && aux < outputTemp.size() && currentOutput[aux] == outputTemp[aux]) {
+                aux++;
+            }
+
+            commonPrefix = outputTemp.substr(0, aux);
+            wordSuffix = outputTemp.substr(aux, outputTemp.size());
+            setOutput(tempStates[i], currentWord[i], commonPrefix);
+
+            for(auto &transictionPair: tempStates[i+1]->transictions) {
+                setOutput(tempStates[i+1], transictionPair.first, wordSuffix + output(tempStates[i+1], transictionPair.first));
+            }
+
+            currentOutput = currentOutput.substr(aux, currentOutput.size());
         }
 
-        commonPrefix = currentOutput.substr(0, aux);
-        wordSuffix = currentOutput.substr(aux, currentOutput.size());
-
-        std::cout << "previousWord: " << previousWord << " ";
-        std::cout << "previousOutput: " << previousOutput << " " << std::endl;
-        std::cout << "currentWord: " << currentWord << " ";
-        std::cout << "currentOutput: " << currentOutput << " " << std::endl;
-        std::cout << "commonPrefix: " << commonPrefix << " ";
-        std::cout << "wordSuffix: " << wordSuffix << "\n\n" <<std::endl;
-
-        setOutput(tempStates[aux], currentWord[aux], commonPrefix);
-        
+        setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
         previousWord = currentWord;
-        previousOutput = currentOutput;
     }
 
     ordenatedWords.close();
-
 
     for(std::size_t i = previousWord.size(); i > 0; i--) {
         setTransition(tempStates[i-1], previousWord[i-1], findMinimized(tempStates[i]));

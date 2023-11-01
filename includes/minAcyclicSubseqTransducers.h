@@ -2,6 +2,7 @@
 #define MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
 
 #include <unordered_map>
+#include <map>
 #include <utility>
 #include <fstream>
 #include <iostream>
@@ -17,10 +18,12 @@ struct STATE {
     STATE() {
         isFinal = false;
         transictions.clear();
+        output = "";
     }
 
     bool isFinal;
-    std::unordered_map<char, std::pair<std::string, STATE *>> transictions;
+    std::string output;
+    std::map<char, std::pair<std::string, STATE *>> transictions;
 };
 
 struct StateHasher {

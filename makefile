@@ -20,15 +20,14 @@ EXECUTABLE_TRIE = $(SRC_EXE)/poc_trie.exe
 SOURCES_MAST = $(SRC_LIB)/minAcyclicSubseqTransducers.cpp
 SOURCES_LEV = $(SRC_LIB)/levenshtein.cpp
 SOURCES_TRIE = $(SRC_LIB)/trie.cpp
-SOURCES_AUTO_COMPLETE_TRIE = $(SRC_LIB)/auto_complete_trie.cpp $(SRC_LIB)/levenshtein.cpp  $(SRC_LIB)/trie.cpp $(SRC_LIB)/utils.cpp
-SOURCES_AUTO_COMPLETE_MAST = $(SRC_LIB)/auto_complete_mast.cpp $(SRC_LIB)/levenshtein.cpp $(SRC_LIB)/minAcyclicSubseqTransducers.cpp $(SRC_LIB)/utils.cpp
+SOURCES_AUTO_COMPLETE_TRIE = $(SRC_LIB)/auto_complete_trie.cpp $(SRC_LIB)/levenshtein.cpp  $(SRC_LIB)/trie.cpp $(SRC_LIB)/utils.h
+SOURCES_AUTO_COMPLETE_MAST = $(SRC_LIB)/auto_complete_mast.cpp $(SRC_LIB)/levenshtein.cpp $(SRC_LIB)/minAcyclicSubseqTransducers.cpp $(SRC_LIB)/utils.h
 
 # Comando de compilação
 CC = g++
 
 # Opções do compilador
-CFLAGS = -Wall -Wextra -std=c++11 -g
-# CFLAGS = -Wall -Wextra -std=c++11 -O3
+CFLAGS = -Wall -Wextra -std=c++11 -O3
 
 # Comando para limpar os arquivos compilados
 RM = rm -f

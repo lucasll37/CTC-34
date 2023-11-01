@@ -1,6 +1,5 @@
 #include "auto_complete_mast.h"
 
-
 void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
    
     //////////////////////////////////////////////////////////////
@@ -25,18 +24,17 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     #endif
 
     auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
-    auto memoryInfo = getMemoryUsage();
     bool useLevenshtein = true;
+    unsigned int memoryUsage = sizeof(mast);
 
     std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
     std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
-    std::cout << "PID: " << "\033[32m" << memoryInfo.second << "\033[0m" << "." << std::endl;
     std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
     std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
     std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
-    std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
+    std::cout << "Memory usage: " << "\033[32m" << memoryUsage << " bytes" << "\033[0m" << "." <<  std::endl; // apaga???
     std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
-    std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0 or 1 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+    std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1 or 2 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
 
     std::cout << "\nLevenshtein Algorithm: ";
     if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
@@ -50,11 +48,9 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
 
     char c;
-    std::string input;
-    std::string lWord, rWord;
-    std::vector<std::string> bagOfWords;
+    std::string input, index, lWord, rWord;
+    std::vector<std::pair<std::string, std::string>> bagOfWords;
     STATE_LEV *st_lev;
-    std::size_t count;
 
     while(true) {
         c = getch();
@@ -75,8 +71,12 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else if(c == '1') {
             maxLevenshteinDistance = 1;
         }
+
+        else if(c == '2') {
+            maxLevenshteinDistance = 2;
+        }
         
-        if(c != 127 && c != ' ' && c != '0' && c != '1' && input.size() < MAX_WORD_SIZE) {
+        if(c != 127 && c != ' ' && c != '0' && c != '1' && c != '2' && input.size() < MAX_WORD_SIZE) {
             input += c;
         }
         
@@ -89,13 +89,12 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         
         std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
         std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
-        std::cout << "PID: " << "\033[32m" << memoryInfo.second << "\033[0m" << "." << std::endl;
         std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
         std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
         std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
-        std::cout << "Memory usage: " << "\033[32m" << memoryInfo.first << " bytes" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Memory usage: " << "\033[32m" << memoryUsage << " bytes" << "\033[0m" << "." <<  std::endl;
         std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
-        std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0 or 1 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
+        std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1 or 2 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
 
         std::cout << "\nLevenshtein Algorithm: ";
         if(useLevenshtein) std::cout << "\033[32m" << "ON" << "\033[0m" << std::endl;
@@ -116,6 +115,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         st_mast = mast.initialState;
         lWord = "";
         rWord = "";
+        index = "";
         bagOfWords.clear();
 
         //////////////////////////////////////////////////////////////
@@ -124,26 +124,16 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
         if(useLevenshtein) {    
             lev = new LevenshteinAutomaton(input, maxLevenshteinDistance);
-            lev->generate();
-            st_lev = lev->initialState;
         }
 
         else {
             lev = new LevenshteinAutomaton("A", 0);
-            lev->generate();
-            st_lev = lev->initialState;    
-
-            for(char c: input) {
-                if(st_mast->transictions.find(c) != st_mast->transictions.end()) {
-                    lWord += c;
-                    st_mast = st_mast->transictions[c].second;
-                }
-
-                else break;
-            }
         }
 
-        dfs(st_mast, st_lev, lWord, rWord, bagOfWords, useLevenshtein);
+        lev->generate();
+        st_lev = lev->initialState;    
+
+        dfs(st_mast, st_lev, input, lWord, rWord, index, bagOfWords, useLevenshtein);
 
         delete lev;
 
@@ -155,10 +145,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         std::cout << "\nAutocomplete run time: " << "\033[32m" << duration_aut.count() << " microseconds" << "\033[0m" << "." << std::endl;
         std::cout << "Suggestions (total: " << "\033[32m" << bagOfWords.size() << " word(s)" << "\033[0m" << "):\n" << std::endl;
 
-        count = 0;
-
-        for(auto word: bagOfWords) {
-            std::cout << "\t(" << ++count << ") " << word << std::endl;
+        for(auto wordPair: bagOfWords) {
+            std::cout << "\t(" << wordPair.first << ") " << wordPair.second << std::endl;
         }
 
         if(bagOfWords.size() == 0) {
@@ -169,19 +157,36 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     return;
 }
 
+void AutoComplete::dfs(STATE *st_mast,
+                       STATE_LEV *st_lev,
+                       std::string &input,
+                       std::string &lWord,
+                       std::string rWord,
+                       std::string index,
+                       std::vector<std::pair<std::string, std::string>> &bagOfWords,
+                       bool useLevenshtein) {
 
-void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, std::string rWord, std::vector<std::string> &bagOfWords, bool useLevenshtein) {
-    if(st_mast->isFinal && (st_lev->isMatch || !useLevenshtein)) {
-        bagOfWords.push_back(lWord + rWord);
+    if(!useLevenshtein && bagOfWords.size() == MAX_WORD_WITHOUT_LEV) return;
+
+    std::string word = lWord + rWord;
+
+    if(st_mast->isFinal && (word >= input || useLevenshtein) && (st_lev->isMatch || !useLevenshtein)) {
+        bagOfWords.push_back(std::make_pair(index + st_mast->output, word));
     }
 
     if(st_lev->transitions['*'] == st_lev && useLevenshtein) {
         return;
     }
 
+    STATE *nextState;
+    STATE_LEV *nextStateLev;
+    std::string newRWord;
+    std::string newIndex;
+
     for(auto transictionPair: st_mast->transictions) {
-        STATE *nextState = transictionPair.second.second;
-        STATE_LEV *nextStateLev;
+        nextState = transictionPair.second.second;
+        newRWord = rWord + transictionPair.first;
+        newIndex = index + transictionPair.second.first;
 
         if(st_lev->transitions.find(transictionPair.first) != st_lev->transitions.end()) {
             nextStateLev = st_lev->transitions[transictionPair.first];
@@ -196,7 +201,7 @@ void AutoComplete::dfs(STATE *st_mast, STATE_LEV *st_lev, std::string &lWord, st
             break;
         }
 
-        dfs(nextState, nextStateLev, lWord, rWord + transictionPair.first, bagOfWords, useLevenshtein);
+        dfs(nextState, nextStateLev, input, lWord, newRWord, newIndex, bagOfWords, useLevenshtein);
     }
 
     return;
