@@ -30,9 +30,10 @@ void Trie::setFinal(STATE *state, bool isFinal) {
     state->isFinal = isFinal;
 }
 
-STATE *Trie::findMinimized(STATE *s) {
+STATE *Trie::includeState(STATE *s) {
     STATE *r = new STATE();
     r->isFinal = s->isFinal;
+    r->id = nStates;
     
     for(auto &transictionPair: s->transictions) {
         r->transictions[transictionPair.first] = transictionPair.second;
@@ -127,7 +128,7 @@ void Trie::generate(const std::string &filePath) {
         }
 
         for(std::size_t i = previousWord.size(); i > prefixLengthPlus1; i--) {
-            setTransition(tempStates[i-1], previousWord[i-1], findMinimized(tempStates[i]));
+            setTransition(tempStates[i-1], previousWord[i-1], includeState(tempStates[i]));
         }
 
         for(std::size_t i = prefixLengthPlus1; i < currentWord.size(); i++) {
@@ -174,10 +175,10 @@ void Trie::generate(const std::string &filePath) {
     ordenatedWords.close();
 
     for(std::size_t i = previousWord.size(); i > 0; i--) {
-        setTransition(tempStates[i-1], previousWord[i-1], findMinimized(tempStates[i]));
+        setTransition(tempStates[i-1], previousWord[i-1], includeState(tempStates[i]));
     }
 
-    initialState = findMinimized(tempStates[0]);
+    initialState = includeState(tempStates[0]);
 
     return;
 }

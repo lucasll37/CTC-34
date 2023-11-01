@@ -18,10 +18,12 @@ struct STATE {
         isFinal = false;
         transictions.clear();
         output = "";
+
     }
 
     bool isFinal;
     std::string output;
+    std::size_t id;
     std::map<char, std::pair<std::string, STATE *>> transictions;
 };
 
@@ -30,7 +32,8 @@ struct StateHasher {
         size_t hashValue = 0;
         
         hashValue ^= std::hash<bool>()(state->isFinal) + 0x9e3779b9;
-        hashValue ^= std::hash<std::string>()(state->output) + 0x9e3779b9; // new
+        hashValue ^= std::hash<std::string>()(state->output) + 0x9e3779b9;
+        hashValue ^= std::hash<std::size_t>()(state->id) + 0x9e3779b9;
         
         for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
@@ -49,6 +52,10 @@ struct StateEqual {
         }
         
         if(lhs->output != rhs->output) {
+            return false;
+        }
+
+        if(lhs->id != rhs->id) {
             return false;
         }
 
@@ -91,7 +98,7 @@ class Trie {
         std::string output(STATE *state, char c);
         void setTransition(STATE *state, char c, STATE *nextState);
         void setFinal(STATE *state, bool isFinal);
-        STATE *findMinimized(STATE *s);
+        STATE *includeState(STATE *s);
         void cleanState(STATE *state);
 };
 
