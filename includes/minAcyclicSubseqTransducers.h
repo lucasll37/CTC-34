@@ -72,6 +72,7 @@ class MinAcyclicSubseqTransducers {
         std::size_t nStates = 0;
         std::size_t nEdges = 0;
         std::size_t nWords = 0;
+        std::vector<std::string> WORDS;
 
         MinAcyclicSubseqTransducers();
         ~MinAcyclicSubseqTransducers();

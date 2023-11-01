@@ -72,7 +72,14 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     digraph << "ini -> q" << states[initialState] << ";\n";
 
     for(auto &state : states) {
-        digraph << "\tq" << state.second << " [label=\"q" << state.second << "\"];\n";
+        if(state.first->output != "") {
+            digraph << "\tq" << state.second << " [label=\"q" << state.second << " / " << state.first->output << "\"];\n";
+        }
+
+        else {
+            digraph << "\tq" << state.second << " [label=\"q" << state.second << "\"];\n";
+        }
+
         if(state.first->isFinal) {
             digraph << "\tq" << state.second << " [shape=doublecircle];\n";
             digraph << "\tq" << state.second << " [style=filled fillcolor=gray];\n";
@@ -110,6 +117,8 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
         return;
     }
     
+    WORDS.clear();
+
     std::string previousWord = "";
     std::string currentWord;
     std::string currentOutput;
@@ -118,9 +127,11 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
     std::string wordSuffix;
     std::size_t prefixLengthPlus1;
     std::size_t aux;
-   
+
     while(std::getline(ordenatedWords, currentWord)) {
-        currentOutput = std::to_string(++nWords);
+        currentOutput = std::to_string(nWords++);
+        WORDS.push_back(currentWord);
+
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
@@ -157,7 +168,18 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
             currentOutput = currentOutput.substr(aux, currentOutput.size());
         }
 
-        setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
+        if(prefixLengthPlus1 > 0 && prefixLengthPlus1 == previousWord.size()) {
+            tempStates[prefixLengthPlus1-1]->output += currentOutput;
+            // setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
+            std::cout << "previousWord: " << previousWord;
+            std::cout << " currentWord: " << currentWord;
+            std::cout << " prefixLengthPlus1: " << prefixLengthPlus1 << std::endl;
+        }
+
+        else {
+            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
+        }
+
         previousWord = currentWord;
     }
 

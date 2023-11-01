@@ -9,7 +9,7 @@
 #include <iostream>
 #include <chrono>
 
-#define MAX_WORD_WITHOUT_LEV 200
+#define MAX_WORD_WITHOUT_LEV 100
 
 class AutoComplete {
 
