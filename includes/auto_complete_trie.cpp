@@ -131,6 +131,16 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
         else {
             lev = new LevenshteinAutomaton("A", 0);
+
+            for(char c: input) {
+                if(st_mast->transictions.find(c) != st_mast->transictions.end()) {
+                    index += st_mast->transictions[c].first;
+                    lWord += c;
+                    st_mast = st_mast->transictions[c].second;
+                }
+
+                else break;
+            }
         }
 
         lev->generate();

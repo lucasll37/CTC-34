@@ -29,7 +29,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     auto fileSize = std::filesystem::file_size(pathToOrdenatedWords);
 
     std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
-    std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+    std::cout << "Data structure: " << "\033[32m" <<  "Finite State Transducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
     std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
     std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
     std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
@@ -90,7 +90,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         #endif
         
         std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
-        std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+        std::cout << "Data structure: " << "\033[32m" <<  "Finite State Transducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
         std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
         std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
         std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
@@ -131,6 +131,16 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
         else {
             lev = new LevenshteinAutomaton("A", 0);
+
+            for(char c: input) {
+                if(st_mast->transictions.find(c) != st_mast->transictions.end()) {
+                    index += st_mast->transictions[c].first;
+                    lWord += c;
+                    st_mast = st_mast->transictions[c].second;
+                }
+
+                else break;
+            }
         }
 
         lev->generate();

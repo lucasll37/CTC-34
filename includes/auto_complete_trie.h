@@ -11,7 +11,7 @@
 #include <filesystem>
 
 
-#define MAX_WORD_WITHOUT_LEV 100
+#define MAX_WORD_WITHOUT_LEV 30
 
 class AutoComplete {
 
