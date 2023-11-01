@@ -31,6 +31,7 @@ struct StateHasher {
         size_t hashValue = 0;
         
         hashValue ^= std::hash<bool>()(state->isFinal) + 0x9e3779b9;
+        hashValue ^= std::hash<std::string>()(state->output) + 0x9e3779b9; // new
         
         for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
@@ -45,6 +46,10 @@ struct StateHasher {
 struct StateEqual {
     bool operator()(const STATE *lhs, const STATE *rhs) const {
         if(lhs->isFinal != rhs->isFinal) {
+            return false;
+        }
+        
+        if(lhs->output != rhs->output) {
             return false;
         }
 

@@ -169,11 +169,11 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
         }
 
         if(prefixLengthPlus1 > 0 && prefixLengthPlus1 == previousWord.size()) {
-            tempStates[prefixLengthPlus1-1]->output += currentOutput;
-            // setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
-            std::cout << "previousWord: " << previousWord;
-            std::cout << " currentWord: " << currentWord;
-            std::cout << " prefixLengthPlus1: " << prefixLengthPlus1 << std::endl;
+            // tempStates[prefixLengthPlus1-1]->output += currentOutput;
+            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
+            // std::cout << "previousWord: " << previousWord;
+            // std::cout << " currentWord: " << currentWord;
+            // std::cout << " prefixLengthPlus1: " << prefixLengthPlus1 << std::endl;
         }
 
         else {
