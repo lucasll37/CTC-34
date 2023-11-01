@@ -1,5 +1,5 @@
-#ifndef TRIE_H
-#define TRIE_H
+#ifndef MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
+#define MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
 
 #include <unordered_map>
 #include <map>
@@ -12,29 +12,29 @@
 
 #define MAX_WORD_SIZE 30
 
-
 struct STATE {
 
     STATE() {
         isFinal = false;
         transictions.clear();
+        output = "";
     }
 
-    std::map<char, std::pair<unsigned int, STATE *>> transictions;
     bool isFinal;
+    std::string output;
+    std::map<char, std::pair<std::string, STATE *>> transictions;
 };
 
 struct StateHasher {
     size_t operator()(const STATE *state) const {
         size_t hashValue = 0;
         
-        // Hash para o campo isFinal
         hashValue ^= std::hash<bool>()(state->isFinal) + 0x9e3779b9;
+        hashValue ^= std::hash<std::string>()(state->output) + 0x9e3779b9; // new
         
-        // Hash para cada item no unordered_map
         for(const auto& pair : state->transictions) {
             hashValue ^= std::hash<char>()(pair.first) + 0x9e3779b9;
-            hashValue ^= std::hash<unsigned int>()(pair.second.first) + 0x9e3779b9;
+            hashValue ^= std::hash<std::string>()(pair.second.first) + 0x9e3779b9;
             hashValue ^= std::hash<STATE*>()(pair.second.second) + 0x9e3779b9;
         }
         
@@ -48,12 +48,20 @@ struct StateEqual {
             return false;
         }
         
-        return lhs->transictions == rhs->transictions;
+        if(lhs->output != rhs->output) {
+            return false;
+        }
 
+        if(lhs->transictions.size() != rhs->transictions.size()) {
+            return false;
+        }
+        
         for(const auto& pair : rhs->transictions) {
-            if(pair.first != rhs->transictions.find(pair.first)->first) {
-                return false;
-            }
+            auto lhs_it = lhs->transictions.find(pair.first);
+
+            if (lhs_it == lhs->transictions.end()) return false;
+            if (pair.second.first != lhs_it->second.first) return false;        
+            if (pair.second.second != lhs_it->second.second) return false;
         }
 
         return true;
@@ -65,24 +73,26 @@ class Trie {
     public:
         
         STATE *initialState;
+        std::size_t nStates = 0;
+        std::size_t nEdges = 0;
+        std::size_t nWords = 0;
+        std::vector<std::string> WORDS;
 
         Trie();
         ~Trie();
-        std::size_t nWords = 0;
-        std::size_t nStates = 0;
-        std::size_t nEdges = 0;
         void printDigraph(const std::string& graphVizFolder);
         void generate(const std::string& filePath);
 
     private:
-    
+
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
-
-        void setTransition(STATE *state, char c, unsigned int value, STATE *nextState);
+        void setOutput(STATE *state, char c, std::string output);
+        std::string output(STATE *state, char c);
+        void setTransition(STATE *state, char c, STATE *nextState);
         void setFinal(STATE *state, bool isFinal);
-        STATE *includeState(STATE *s);
+        STATE *findMinimized(STATE *s);
         void cleanState(STATE *state);
 };
 
-#endif /* TRIE_H */
+#endif /* MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H */

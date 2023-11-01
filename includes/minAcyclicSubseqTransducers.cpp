@@ -63,7 +63,7 @@ void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
 
 void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
 
-    std::ofstream digraph(graphVizFolder + "/poc_mast.dot");
+    std::ofstream digraph(graphVizFolder + "/poc_fst.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
     digraph << "charset=\"utf8\";\n";
@@ -169,7 +169,7 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
         }
 
         if(prefixLengthPlus1 > 0 && prefixLengthPlus1 == previousWord.size()) {
-            // tempStates[prefixLengthPlus1-1]->output += currentOutput;
+            // tempStates[prefixLengthPlus1]->output += "apaga";// currentOutput;
             setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
             // std::cout << "previousWord: " << previousWord;
             // std::cout << " currentWord: " << currentWord;

@@ -8,6 +8,8 @@
 #include <string>
 #include <iostream>
 #include <chrono>
+#include <filesystem>
+
 
 #define MAX_WORD_WITHOUT_LEV 100
 

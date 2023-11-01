@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <map>
-#include <unordered_set>
+#include <set>
 #include <algorithm>
 #include <fstream>
 #include <utility>
@@ -39,7 +39,7 @@ private:
     std::vector<int> step(const std::vector<int>& state, char c);
     bool is_match(const std::vector<int>& state);
     bool can_match(const std::vector<int>& state);
-    std::unordered_set<char> transitions(const std::vector<int>& state);
+    std::set<char> transitions(const std::vector<int>& state);
 
     int explore(std::vector<int> &state,
                 std::map<std::vector<int>, int> &states,

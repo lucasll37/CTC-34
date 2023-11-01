@@ -1,4 +1,4 @@
-#include <auto_complete_mast.h>
+#include <auto_complete_fst.h>
 
 int main() {
     AutoComplete auto_complete;

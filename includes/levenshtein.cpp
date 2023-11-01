@@ -46,8 +46,8 @@ bool LevenshteinAutomaton::can_match(const std::vector<int>& state) {
     return *std::min_element(state.begin(), state.end()) <= max_edits;
 }
 
-std::unordered_set<char> LevenshteinAutomaton::transitions(const std::vector<int>& state) {
-    std::unordered_set<char> result;
+std::set<char> LevenshteinAutomaton::transitions(const std::vector<int>& state) {
+    std::set<char> result;
     
     for (size_t i = 0; i < s.size(); ++i) {
         if (state[i] <= max_edits) {

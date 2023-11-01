@@ -9,7 +9,6 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include <stdexcept>
 
 #define MAX_WORD_SIZE 30
 

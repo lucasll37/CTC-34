@@ -1,4 +1,4 @@
-#include "auto_complete_mast.h"
+#include "auto_complete_fst.h"
 
 void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
    
@@ -26,9 +26,11 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
     auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
     bool useLevenshtein = true;
     unsigned int memoryUsage = mast.nEdges * sizeof(std::pair<std::string, STATE *>) + mast.nStates * ( sizeof(bool) + sizeof(std::string) );
+    auto fileSize = std::filesystem::file_size(pathToOrdenatedWords);
 
     std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
     std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+    std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
     std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
     std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
     std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
@@ -89,6 +91,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         
         std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
         std::cout << "Data structure: " << "\033[32m" <<  "Finite State Tranducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+        std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
         std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
         std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
         std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
