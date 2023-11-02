@@ -1,12 +1,21 @@
 # Exame de CTC-34
 
-#### Obs.: Execute no Linux ou WSL2 através dos comandos do makefile. Caso utilize outro SO, entenda o que o comando faz e o adapte-o para execução direta dos comandos no terminal.
+#### Obs.: Execute no Linux ou WSL2 através dos comandos do makefile. Caso utilize outro Sistema Operacional, entenda o que o comando faz e o adapte-o para execução direta dos comandos no terminal.
 
-## Exemplo de execução
+## Base de dados ordenados
 
-```bash
-make poc-lev
-```
+- `american-english.txt`: Dicionário original da língua inglesa fornecida no Linux (quase ordenado).
+- `american-english-correct.txt`: Dicionário original da língua inglesa com correção de ordenação de casos anômalos (Ångström, étude, ...). Gerado com o comando:
+
+    ```bash
+    make all-sort
+    ```
+- `hundred.txt`: Lista de 100 palavras comuns da língua inglesa.
+- `mounths.txt`: Lista de meses do ano em inglês.
+- `week.txt`: Lista de dias da semana em inglês.
+- `dummy.txt`:	Lista de palavras consultada para a prova de conceito.
+
+sugestão de uso: popule `dummy.txt` com palavras de sua preferência e execute as provas de conceito para ver o funcionamento dos algoritmos.
 
 ## Provas de conceito
 
@@ -52,7 +61,7 @@ make poc-lev
     make all-fst
     ```
 
-## Atalhos
+## Atalhos (Compilação e Execução)
 
 - #### Compila o autocomplete implementado com um FST (`./src/main_fst.cpp`), salva executável em `./build/main_fst.exe` e o executa na sequência.
     ```bash

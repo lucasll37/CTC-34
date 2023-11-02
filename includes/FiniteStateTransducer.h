@@ -1,5 +1,5 @@
-#ifndef MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
-#define MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H
+#ifndef FINITE_STATE_TRANSUCER_H
+#define FINITE_STATE_TRANDUCER_H
 
 #include <unordered_map>
 #include <map>
@@ -68,7 +68,7 @@ struct StateEqual {
     }
 };
 
-class MinAcyclicSubseqTransducers {
+class FiniteStateTransducer {
 
     public:
         
@@ -78,8 +78,8 @@ class MinAcyclicSubseqTransducers {
         std::size_t nWords = 0;
         std::vector<std::string> WORDS;
 
-        MinAcyclicSubseqTransducers();
-        ~MinAcyclicSubseqTransducers();
+        FiniteStateTransducer();
+        ~FiniteStateTransducer();
         void printDigraph(const std::string& graphVizFolder);
         void generate(const std::string& filePath);
 
@@ -87,12 +87,15 @@ class MinAcyclicSubseqTransducers {
 
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
-        void setOutput(STATE *state, char c, std::string output);
         std::string output(STATE *state, char c);
+        
+        void setOutput(STATE *state, char c, std::string output);
+        std::string stateOutput(STATE *state);
+        void setStateOutput(STATE *state, std::string output);
         void setTransition(STATE *state, char c, STATE *nextState);
         void setFinal(STATE *state, bool isFinal);
         STATE *findMinimized(STATE *s);
         void cleanState(STATE *state);
 };
 
-#endif /* MIN_ACYCLIC_SUBSEQ_TRANSDUCERS_H */
+#endif /* FINITE_STATE_TRANSUCER_H */

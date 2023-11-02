@@ -1,16 +1,16 @@
-#include "auto_complete_fst.h"
+#include "AutoComplete_trie.h"
 
 void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLevenshteinDistance){
    
     //////////////////////////////////////////////////////////////
     auto start_ind = std::chrono::high_resolution_clock::now(); //
     //////////////// START OF TIME COUNTING //////////////////////
-    MinAcyclicSubseqTransducers mast;
+    Trie trie;
     LevenshteinAutomaton *lev;
 
     STATE *st_mast;
 
-    mast.generate(pathToOrdenatedWords);
+    trie.generate(pathToOrdenatedWords);
     
     ///////////// END OF TIME COUNTING ///////////////////////////
     auto stop_ind = std::chrono::high_resolution_clock::now(); ///
@@ -25,15 +25,15 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
 
     auto duration_ind = std::chrono::duration_cast<std::chrono::milliseconds>(stop_ind - start_ind);
     bool useLevenshtein = true;
-    unsigned int memoryUsage = mast.nEdges * sizeof(std::pair<std::string, STATE *>) + mast.nStates * ( sizeof(bool) + sizeof(std::string) );
+    unsigned int memoryUsage = trie.nEdges * sizeof(std::pair<std::string, STATE *>) + trie.nStates * (sizeof(bool) + sizeof(std::string) + sizeof(std::size_t));
     auto fileSize = std::filesystem::file_size(pathToOrdenatedWords);
 
-    std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
-    std::cout << "Data structure: " << "\033[32m" <<  "Finite State Transducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+    std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to n character(s) apart (levenshtein algorithm)\n" << std::endl;
+    std::cout << "Data structure: " << "\033[32m" <<  "TRIE" <<  "\033[0m" << "." << std::endl;
     std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
-    std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
-    std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
-    std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
+    std::cout << "Number of words: " << "\033[32m" << trie.nWords << " words" << "\033[0m" << "." << std::endl;
+    std::cout << "Number of states: " << "\033[32m" << trie.nStates << " states" << "\033[0m" << "." <<  std::endl;
+    std::cout << "Number of edges: " << "\033[32m" << trie.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
     std::cout << "Memory usage: " << "\033[32m" << memoryUsage / 1024 << " kB" << "\033[0m" << "." <<  std::endl;
     std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
     std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1 or 2 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
@@ -77,8 +77,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else if(c == '2') {
             maxLevenshteinDistance = 2;
         }
-        
-        if(c != 127 && c != ' ' && c != '0' && c != '1' && c != '2' && input.size() < MAX_WORD_SIZE) {
+
+        if(!std::isdigit(c) && c!=' ' && c!=127 && c!=27 && c!='\n' && input.size() < MAX_WORD_SIZE) {
             input += c;
         }
         
@@ -89,12 +89,12 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
             if(system("clear")) return;
         #endif
         
-        std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to 1 character apart (levenshtein)\n" << std::endl;
-        std::cout << "Data structure: " << "\033[32m" <<  "Finite State Transducer (build with MAST algorithm)" <<  "\033[0m" << std::endl;
+        std::cout << "\n\nAutomatic completion for the English language dictionary with word suggestions up to n character(s) apart (levenshtein algorithm)\n" << std::endl;
+        std::cout << "Data structure: " << "\033[32m" <<  "TRIE" <<  "\033[0m" << "." << std::endl;
         std::cout << "File size: " << "\033[32m" << fileSize / 1024 << " kB" << "\033[0m" << "." << std::endl;
-        std::cout << "Number of words: " << "\033[32m" << mast.nWords << " words" << "\033[0m" << "." << std::endl;
-        std::cout << "Number of states: " << "\033[32m" << mast.nStates << " states" << "\033[0m" << "." <<  std::endl;
-        std::cout << "Number of edges: " << "\033[32m" << mast.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Number of words: " << "\033[32m" << trie.nWords << " words" << "\033[0m" << "." << std::endl;
+        std::cout << "Number of states: " << "\033[32m" << trie.nStates << " states" << "\033[0m" << "." <<  std::endl;
+        std::cout << "Number of edges: " << "\033[32m" << trie.nEdges << " edges" << "\033[0m" << "." <<  std::endl;
         std::cout << "Memory usage: " << "\033[32m" << memoryUsage / 1024 << " kB" << "\033[0m" << "." <<  std::endl;
         std::cout << "Index creation time: " << "\033[32m" << duration_ind.count() << " milliseconds" << "\033[0m" << "." <<  std::endl;
         std::cout << "\n\nType the desired word. Press \"SPACE\" to toggle Levenshtein Algorithm. Press 0, 1 or 2 to change Levenshtein distance. Press \"ESC\" or \"ENTER\" to exit." << std::endl;
@@ -108,14 +108,14 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else std::cout << "\033[31m" << "-" << "\033[0m" << std::endl;
 
         if(input.size() != 0) {
-            std::cout << "\n\tINPUT: " << "\033[32m" << input << "\033[0m" << std::endl;
+            std::cout << "\n\tINPUT: " << "\033[1;32;42m" << input << "\033[0m" << std::endl;
         }
         else {
             std::cout << "\n\tINPUT: ";
             continue;
         }
 
-        st_mast = mast.initialState;
+        st_mast = trie.initialState;
         lWord = "";
         rWord = "";
         index = "";
@@ -163,6 +163,8 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else {
             std::cout << "Suggestions (total: " << "\033[32m" << bagOfWords.size() << " word(s)" << "\033[0m" << "):\n" << std::endl;
         }
+
+        std::cout << "\t(" << "\033[1;34m" << "INDEX" << "\033[0m" << ") "<< "\033[1;34m" << "WORD" << "\033[0m\n" << std::endl;
 
         for(auto wordPair: bagOfWords) {
             std::cout << "\t(" << wordPair.first << ") " << wordPair.second << std::endl;

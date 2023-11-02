@@ -1,4 +1,4 @@
-#include "levenshtein.h"
+#include "Levenshtein.h"
 
 
 LevenshteinAutomaton::LevenshteinAutomaton(const std::string& s, int n){
@@ -54,6 +54,7 @@ std::set<char> LevenshteinAutomaton::transitions(const std::vector<int>& state) 
             result.insert(s[i]);
         }
     }
+
     return result;
 }
 
@@ -124,7 +125,6 @@ void LevenshteinAutomaton::printDigraph(const std::string& graphVizFolder) {
     file << "\trankdir=TB;\n";
     file << "charset=\"utf8\";\n";
     file << "\tnode [shape = doublecircle];\n";
-
 
     for (std::size_t i = 0; i < statesAddress.size(); i++) {
         if (statesAddress[i]->isMatch) {

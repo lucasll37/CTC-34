@@ -1,13 +1,12 @@
-#include "minAcyclicSubseqTransducers.h"
+#include "FiniteStateTransducer.h"
 
-
-MinAcyclicSubseqTransducers::MinAcyclicSubseqTransducers() {
+FiniteStateTransducer::FiniteStateTransducer() {
     for(auto &tempState : tempStates) {
         tempState = new STATE();
     }
 }
 
-MinAcyclicSubseqTransducers::~MinAcyclicSubseqTransducers() {
+FiniteStateTransducer::~FiniteStateTransducer() {
     for(auto &tempState : tempStates) {
         delete tempState;
     }
@@ -17,7 +16,7 @@ MinAcyclicSubseqTransducers::~MinAcyclicSubseqTransducers() {
     }
 }
 
-void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, STATE *nextState) {
+void FiniteStateTransducer::setTransition(STATE *state, char c, STATE *nextState) {
     if(state->transictions.find(c) == state->transictions.end()) {
         state->transictions[c] = std::make_pair("", nextState);
     }
@@ -27,14 +26,12 @@ void MinAcyclicSubseqTransducers::setTransition(STATE *state, char c, STATE *nex
     }
 }
 
-void MinAcyclicSubseqTransducers::setFinal(STATE *state, bool isFinal) {
+void FiniteStateTransducer::setFinal(STATE *state, bool isFinal) {
     state->isFinal = isFinal;
 }
 
-STATE *MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
-    
+STATE *FiniteStateTransducer::findMinimized(STATE *s) {    
     STATE *r = nullptr;
-
 
     if(states.find(s) != states.end()) {
         auto it = states.find(s);
@@ -44,7 +41,8 @@ STATE *MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
     else {
         r = new STATE();
         r->isFinal = s->isFinal;
-        
+        r->output = s->output;
+
         for(auto &transictionPair: s->transictions) {
             r->transictions[transictionPair.first] = transictionPair.second;
         }
@@ -56,13 +54,13 @@ STATE *MinAcyclicSubseqTransducers::findMinimized(STATE *s) {
     return r;
 }
 
-void MinAcyclicSubseqTransducers::cleanState(STATE *state) {
-    state->isFinal = false;
+void FiniteStateTransducer::cleanState(STATE *state) {
     state->transictions.clear();
+    state->isFinal = false;
+    state->output = "";
 }
 
-void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder) {
-
+void FiniteStateTransducer::printDigraph(const std::string& graphVizFolder) {
     std::ofstream digraph(graphVizFolder + "/poc_fst.dot");
     digraph << "digraph G {\n";
     digraph << "rankdir=LR;\n";
@@ -102,15 +100,23 @@ void MinAcyclicSubseqTransducers::printDigraph(const std::string& graphVizFolder
     digraph << "}\n";
 }
 
-std::string MinAcyclicSubseqTransducers::output(STATE *state, char c) {
+std::string FiniteStateTransducer::output(STATE *state, char c) {
     return state->transictions[c].first;
 }
 
-void MinAcyclicSubseqTransducers::setOutput(STATE *state, char c, std::string output) {
+void FiniteStateTransducer::setOutput(STATE *state, char c, std::string output) {
     state->transictions[c].first = output;
 }
 
-void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {    
+std::string FiniteStateTransducer::stateOutput(STATE *state) {
+    return state->output;
+}
+
+void FiniteStateTransducer::setStateOutput(STATE *state, std::string output) {
+    state->output = output;
+}
+
+void FiniteStateTransducer::generate(const std::string &filePath) {    
     std::ifstream ordenatedWords(filePath);
     if (!ordenatedWords.is_open()) {
         std::cout << "Error opening the file for reading." << std::endl;
@@ -118,7 +124,6 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
     }
     
     WORDS.clear();
-
     std::string previousWord = "";
     std::string currentWord;
     std::string currentOutput;
@@ -131,7 +136,6 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
     while(std::getline(ordenatedWords, currentWord)) {
         currentOutput = std::to_string(nWords++);
         WORDS.push_back(currentWord);
-
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {
@@ -159,27 +163,19 @@ void MinAcyclicSubseqTransducers::generate(const std::string &filePath) {
 
             commonPrefix = outputTemp.substr(0, aux);
             wordSuffix = outputTemp.substr(aux, outputTemp.size());
+            currentOutput = currentOutput.substr(aux, currentOutput.size());
             setOutput(tempStates[i], currentWord[i], commonPrefix);
 
             for(auto &transictionPair: tempStates[i+1]->transictions) {
                 setOutput(tempStates[i+1], transictionPair.first, wordSuffix + output(tempStates[i+1], transictionPair.first));
             }
 
-            currentOutput = currentOutput.substr(aux, currentOutput.size());
+            if(tempStates[i+1]->isFinal) {
+                tempStates[i+1]->output = wordSuffix + tempStates[i+1]->output;
+            }
         }
 
-        if(prefixLengthPlus1 > 0 && prefixLengthPlus1 == previousWord.size()) {
-            // tempStates[prefixLengthPlus1]->output += "apaga";// currentOutput;
-            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
-            // std::cout << "previousWord: " << previousWord;
-            // std::cout << " currentWord: " << currentWord;
-            // std::cout << " prefixLengthPlus1: " << prefixLengthPlus1 << std::endl;
-        }
-
-        else {
-            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
-        }
-
+        setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
         previousWord = currentWord;
     }
 

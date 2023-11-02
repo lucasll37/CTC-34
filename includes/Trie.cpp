@@ -1,4 +1,4 @@
-#include "trie.h"
+#include "Trie.h"
 
 Trie::Trie() {
     for(auto &tempState : tempStates) {
@@ -33,6 +33,7 @@ void Trie::setFinal(STATE *state, bool isFinal) {
 STATE *Trie::includeState(STATE *s) {
     STATE *r = new STATE();
     r->isFinal = s->isFinal;
+    r->output = s->output;
     r->id = nStates;
     
     for(auto &transictionPair: s->transictions) {
@@ -46,8 +47,9 @@ STATE *Trie::includeState(STATE *s) {
 }
 
 void Trie::cleanState(STATE *state) {
-    state->isFinal = false;
     state->transictions.clear();
+    state->isFinal = false;
+    state->output = "";
 }
 
 void Trie::printDigraph(const std::string& graphVizFolder) {
@@ -99,6 +101,14 @@ void Trie::setOutput(STATE *state, char c, std::string output) {
     state->transictions[c].first = output;
 }
 
+std::string Trie::stateOutput(STATE *state) {
+    return state->output;
+}
+
+void Trie::setStateOutput(STATE *state, std::string output) {
+    state->output = output;
+}
+
 void Trie::generate(const std::string &filePath) {    
     std::ifstream ordenatedWords(filePath);
     if (!ordenatedWords.is_open()) {
@@ -148,27 +158,19 @@ void Trie::generate(const std::string &filePath) {
 
             commonPrefix = outputTemp.substr(0, aux);
             wordSuffix = outputTemp.substr(aux, outputTemp.size());
+            currentOutput = currentOutput.substr(aux, currentOutput.size());
             setOutput(tempStates[i], currentWord[i], commonPrefix);
 
             for(auto &transictionPair: tempStates[i+1]->transictions) {
                 setOutput(tempStates[i+1], transictionPair.first, wordSuffix + output(tempStates[i+1], transictionPair.first));
             }
 
-            currentOutput = currentOutput.substr(aux, currentOutput.size());
+            if(tempStates[i+1]->isFinal) {
+                tempStates[i+1]->output = wordSuffix + tempStates[i+1]->output;
+            }
         }
 
-        if(prefixLengthPlus1 > 0 && prefixLengthPlus1 == previousWord.size()) {
-            // tempStates[prefixLengthPlus1]->output += "apaga";// currentOutput;
-            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
-            // std::cout << "previousWord: " << previousWord;
-            // std::cout << " currentWord: " << currentWord;
-            // std::cout << " prefixLengthPlus1: " << prefixLengthPlus1 << std::endl;
-        }
-
-        else {
-            setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
-        }
-
+        setOutput(tempStates[prefixLengthPlus1], currentWord[prefixLengthPlus1], currentOutput);
         previousWord = currentWord;
     }
 

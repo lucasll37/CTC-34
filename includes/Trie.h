@@ -94,8 +94,10 @@ class Trie {
 
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
-        void setOutput(STATE *state, char c, std::string output);
         std::string output(STATE *state, char c);
+        void setOutput(STATE *state, char c, std::string output);
+        std::string stateOutput(STATE *state);
+        void setStateOutput(STATE *state, std::string output);
         void setTransition(STATE *state, char c, STATE *nextState);
         void setFinal(STATE *state, bool isFinal);
         STATE *includeState(STATE *s);

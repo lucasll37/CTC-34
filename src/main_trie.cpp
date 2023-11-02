@@ -1,9 +1,8 @@
-#include <auto_complete_trie.h>
+#include "../includes/AutoComplete_fst.h"
 
 int main() {
-    AutoComplete auto_complete;
-    auto_complete.execute("./data/american-english-correct.txt", 1);
-    // auto_complete.execute("./data/dummy.txt", 1);
+    AutoComplete ac;
+    ac.execute("./data/american-english-correct.txt", 1);
 
     return 0;
 }

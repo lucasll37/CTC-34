@@ -1,15 +1,14 @@
-#ifndef AUTO_COMPLETE_MAST_H
-#define AUTO_COMPLETE_MAST_H
+#ifndef AUTO_COMPLETE_FST_H
+#define AUTO_COMPLETE_FST_H
 
-#include "minAcyclicSubseqTransducers.h"
-#include "levenshtein.h"
+#include "FiniteStateTransducer.h"
+#include "Levenshtein.h"
 #include "utils.h"
-
 #include <string>
 #include <iostream>
 #include <chrono>
 #include <filesystem>
-
+#include <cctype>
 
 #define MAX_WORD_WITHOUT_LEV 30
 
@@ -28,9 +27,8 @@ private:
             std::string rWord,
             std::string index,
             std::vector<std::pair<std::string, std::string>> &bagOfWords,
-            bool useLevenshtein);
-            
+            bool useLevenshtein);          
 };
 
-#endif /* EXAME_AUTO_COMPLETE_MAST_H */
+#endif /* AUTO_COMPLETE_FST_H */
 

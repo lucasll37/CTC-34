@@ -1,9 +1,9 @@
-#include <minAcyclicSubseqTransducers.h>
+#include "../../includes/FiniteStateTransducer.h"
 
 int main() {
-    MinAcyclicSubseqTransducers mast;
-    mast.generate("./data/dummy.txt");
-    mast.printDigraph("./graphs/graphViz");
+    FiniteStateTransducer fst;
+    fst.generate("./data/dummy.txt");
+    fst.printDigraph("./graphs/graphViz");
 
     return 0;
 }

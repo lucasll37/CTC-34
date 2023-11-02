@@ -1,13 +1,8 @@
-#include <levenshtein.h>
+#include "../includes/Levenshtein.h"
 
-int main(int argc, char *argv[]) {
-    std::string word;
-
-    if(argc == 2) word = argv[1];
-    else word = "test";
-    
+int main() {
+    std::string word = "levenshtein";
     LevenshteinAutomaton lev(word, 1);
-
     lev.generate();
     lev.printDigraph("./graphs/graphViz");
     

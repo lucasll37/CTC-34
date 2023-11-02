@@ -9,6 +9,7 @@ SRC_EXE = ./build
 
 
 # Nome do executável
+EXECUTABLE_SORT = $(SRC_EXE)/sort.exe
 EXECUTABLE_LEV = $(SRC_EXE)/poc_lev.exe
 EXECUTABLE_TRIE = $(SRC_EXE)/poc_trie.exe
 EXECUTABLE_MAST = $(SRC_EXE)/poc_fst.exe
@@ -17,12 +18,13 @@ EXECUTABLE_AUTO_COMPLETE_MAST = $(SRC_EXE)/main_fst.exe
 
 
 # Lista de arquivos de origem
-SOURCES_LEV = $(SRC_LIB)/levenshtein.cpp
-SOURCES_TRIE = $(SRC_LIB)/trie.cpp
+SOURCES_LEV = $(SRC_LIB)/Levenshtein.cpp
+SOURCES_TRIE = $(SRC_LIB)/Trie.cpp
 
-SOURCES_MAST = $(SRC_LIB)/minAcyclicSubseqTransducers.cpp
-SOURCES_AUTO_COMPLETE_TRIE = $(SRC_LIB)/auto_complete_trie.cpp $(SOURCES_LEV)  $(SOURCES_TRIE) $(SRC_LIB)/utils.h
-SOURCES_AUTO_COMPLETE_FST = $(SRC_LIB)/auto_complete_fst.cpp $(SOURCES_LEV) $(SOURCES_MAST) $(SRC_LIB)/utils.h
+SOURCES_SORT = $(SRC_DIR)/sort.cpp
+SOURCES_FST = $(SRC_LIB)/FiniteStateTransducer.cpp
+SOURCES_AUTO_COMPLETE_TRIE = $(SRC_LIB)/AutoComplete_trie.cpp $(SOURCES_LEV)  $(SOURCES_TRIE) $(SRC_LIB)/utils.h
+SOURCES_AUTO_COMPLETE_FST = $(SRC_LIB)/AutoComplete_fst.cpp $(SOURCES_LEV) $(SOURCES_FST) $(SRC_LIB)/utils.h
 
 # Comando de compilação
 CC = g++
@@ -44,9 +46,12 @@ poc-trie:
 	dot -Tpng ./graphs/graphViz/poc_trie.dot -o ./graphs/poc_trie.png
 
 poc-fst:
-	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_fst.cpp $(SOURCES_MAST) -o $(EXECUTABLE_MAST)
+	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/concept_proof/poc_fst.cpp $(SOURCES_FST) -o $(EXECUTABLE_MAST)
 	$(EXECUTABLE_MAST)
 	dot -Tpng ./graphs/graphViz/poc_fst.dot -o ./graphs/poc_fst.png
+
+build-sort:
+	$(CC) $(CFLAGS) $(SOURCES_SORT) -o $(EXECUTABLE_SORT)
 
 build-trie:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_trie.cpp $(SOURCES_AUTO_COMPLETE_TRIE)  -o $(EXECUTABLE_AUTO_COMPLETE_TRIE)
@@ -54,11 +59,18 @@ build-trie:
 build-fst:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_fst.cpp $(SOURCES_AUTO_COMPLETE_FST)  -o $(EXECUTABLE_AUTO_COMPLETE_MAST)
 
+run-sort:
+	$(EXECUTABLE_SORT) ./data/american-english.txt ./data/american-english-correct.txt
+
 run-trie:
 	$(EXECUTABLE_AUTO_COMPLETE_TRIE)
 
 run-fst:
 	$(EXECUTABLE_AUTO_COMPLETE_MAST)
+
+all-sort:
+	$(CC) $(CFLAGS) $(SOURCES_SORT) -o $(EXECUTABLE_SORT)
+	$(EXECUTABLE_SORT) ./data/american-english.txt ./data/american-english-correct.txt
 
 all-trie:
 	$(CC) $(CFLAGS) -I$(SRC_LIB) $(SRC_DIR)/main_trie.cpp $(SOURCES_AUTO_COMPLETE_TRIE)  -o $(EXECUTABLE_AUTO_COMPLETE_TRIE)
@@ -69,4 +81,4 @@ all-fst:
 	$(EXECUTABLE_AUTO_COMPLETE_MAST)
 
 clear:
-	$(RM) $(EXECUTABLE_MAST) $(EXECUTABLE_LEV) $(EXECUTABLE_TRIE) $(EXECUTABLE_AUTO_COMPLETE_TRIE) $(EXECUTABLE_AUTO_COMPLETE_MAST)
+	$(RM) $(EXECUTABLE_MAST) $(EXECUTABLE_LEV) $(EXECUTABLE_TRIE) $(EXECUTABLE_AUTO_COMPLETE_TRIE) $(EXECUTABLE_AUTO_COMPLETE_MAST) $(EXECUTABLE_SORT)
