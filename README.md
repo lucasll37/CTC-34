@@ -4,7 +4,7 @@
 
 ## Base de dados ordenados
 
-- `american-english.txt`: Dicionário original da língua inglesa fornecida no Linux (quase ordenado).
+- `american-english.txt`: Dicionário original da língua inglesa fornecido no Linux (quase ordenado).
 - `american-english-correct.txt`: Dicionário original da língua inglesa com correção de ordenação de casos anômalos (Ångström, étude, ...). Gerado com o comando:
 
     ```bash
@@ -58,14 +58,14 @@ sugestão de uso: popule `dummy.txt` com palavras de sua preferência e execute 
 
 - #### Executa o arquivo previamente compilado do autocomplete implementado com um FST (`./build/main_fst.exe`).
     ```bash
-    make all-fst
+    make run-fst
     ```
 
 ## Atalhos (Compilação e Execução)
 
 - #### Compila o autocomplete implementado com um FST (`./src/main_fst.cpp`), salva executável em `./build/main_fst.exe` e o executa na sequência.
     ```bash
-    make build-fst
+    make all-fst
     ```
 
 - #### Compila o autocomplete implementado com uma TRIE (`./src/main_trie.cpp`), salva executável em `./build/main_trie.exe`  e o executa na sequência.
