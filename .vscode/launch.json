@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/lucas/Project/exame_ctc34/Exame/includes",
-      "program": "/home/lucas/Project/exame_ctc34/Exame/includes/build/Debug/outDebug",
+      "cwd": "/home/lucas/Project/exame_ctc34/Exame/src",
+      "program": "/home/lucas/Project/exame_ctc34/Exame/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

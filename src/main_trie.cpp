@@ -1,4 +1,4 @@
-#include "../includes/AutoComplete_fst.h"
+#include "../includes/AutoComplete_trie.h"
 
 int main() {
     AutoComplete ac;
