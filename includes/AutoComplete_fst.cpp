@@ -106,7 +106,7 @@ void AutoComplete::execute(std::string pathToOrdenatedWords, unsigned int maxLev
         else std::cout << "\033[31m" << "-" << "\033[0m" << std::endl;
 
         if(input.size() != 0) {
-            std::cout << "\n\tINPUT: " << "\033[1;32;42m" << input << "\033[0m" << std::endl;
+            std::cout << "\n\tINPUT: " << "\033[1;37;42m" << input << "\033[0m" << std::endl;
 
         }
         else {
