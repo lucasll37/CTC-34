@@ -83,7 +83,6 @@ class Trie {
         std::size_t nStates = 0;
         std::size_t nEdges = 0;
         std::size_t nWords = 0;
-        std::vector<std::string> WORDS;
 
         Trie();
         ~Trie();
@@ -94,6 +93,7 @@ class Trie {
 
         std::unordered_map<STATE *, std::size_t, StateHasher, StateEqual> states;
         STATE *tempStates[MAX_WORD_SIZE];
+        
         std::string output(STATE *state, char c);
         void setOutput(STATE *state, char c, std::string output);
         std::string stateOutput(STATE *state);

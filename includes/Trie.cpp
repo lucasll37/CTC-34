@@ -116,8 +116,6 @@ void Trie::generate(const std::string &filePath) {
         return;
     }
     
-    WORDS.clear();
-
     std::string previousWord = "";
     std::string currentWord;
     std::string currentOutput;
@@ -129,8 +127,6 @@ void Trie::generate(const std::string &filePath) {
 
     while(std::getline(ordenatedWords, currentWord)) {
         currentOutput = std::to_string(nWords++);
-        WORDS.push_back(currentWord);
-
         prefixLengthPlus1 = 0;
 
         while(prefixLengthPlus1 < previousWord.size() && prefixLengthPlus1 < currentWord.size() && currentWord[prefixLengthPlus1] == previousWord[prefixLengthPlus1]) {

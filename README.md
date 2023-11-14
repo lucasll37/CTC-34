@@ -11,7 +11,7 @@
     make all-sort
     ```
 - `hundred.txt`: Lista de 100 palavras comuns da língua inglesa.
-- `mounths.txt`: Lista de meses do ano em inglês.
+- `months.txt`: Lista de meses do ano em inglês.
 - `week.txt`: Lista de dias da semana em inglês.
 - `dummy.txt`:	Lista de palavras consultada para a prova de conceito.
 
